@@ -21,18 +21,56 @@ import PrivateDriverSignup from './components/PrivateDriverSignup';
 import DriverSignUp from './components/DriverSignup';
 import DriverForgotPassword from './components/DriverForgotPassword';
 import DriverResetPassword from './components/DriverResetPassword';
+import UserEmailVerification from './components/UserEmailVerification';
+import UserResendEmailOTP from './components/UserResendEmailOtp';
+import AdminSignUp from './components/AdminSignUp';
+import AdminEmailVerification from './components/AdminEmailVerification';
+import AdminResendEmailOTP from './components/AdminResendEmailOTP';
+import AdminLogin from './components/AdminLogin';
+import AdminForgotPassword from './components/AdminForgotPassword';
+import AdminResetPassword from './components/AdminResetPassword';
+import PrivateAdminDashboard from './components/PrivateAdminDashboard';
+import AdminDashboard from './components/AdminDashboard';
+import BackArrow from './components/BackArrow';
+import UserProfile from './components/UserProfile';
+import UserRides from './components/UserRides';
+import DriverEmailVerification from './components/DriverEmailVerification';
+import DriverResendEmailOTP from './components/DriverResendEmailOTP';
+import DriverProfile from './components/DriverProfile';
+import TermsAndPrivacy from './components/TermsAndConditions';
+import FooterComponent from './components/Footer';
+import HeaderComponent from './components/Header';
+import ContactUs from './components/ContactcUs';
+import ScrollToTop from './components/ScrollToTop';
+
 
 function App() {
   return (
     <BrowserRouter>
+    <ScrollToTop/>
+    <HeaderComponent/>
+    <BackArrow/>
         <Routes>
-            <Route path='/' element={<SplashScreen/>}/>
+            <Route path='/' element={<LandingPage/>}/>
+            <Route path='/splash' element={<SplashScreen/>}/>
             <Route path='/useronboarding' element={<UserOnboarding/>}/>
             <Route path='/userforgotpassword' element={<UserForgotPassword/>}/>
             <Route path='/userresetpassword/:token' element={<UserResetPassword/>}/>
             <Route path='/driveronboarding' element={<DriverOnboarding/>}/>
             <Route path='/driverforgotpassword' element={<DriverForgotPassword/>}/>
             <Route path='/driverresetpassword/:token' element={<DriverResetPassword/>}/>
+            <Route path='/driveremailVerification' element={<DriverEmailVerification/>}/>
+            <Route path='/driverresendemailotp' element={<DriverResendEmailOTP/>}/>
+            <Route path='/useremailverification' element={<UserEmailVerification/>}/>
+            <Route path='/userresendemailotp' element={<UserResendEmailOTP/>}/>
+
+            <Route path='/termsandconditions' element={<TermsAndPrivacy/>}/>
+            <Route path='/contactus' element = {<ContactUs/>}/>
+
+
+
+
+
             
 
 
@@ -61,7 +99,31 @@ function App() {
             <Route path='/driversignup' element={<PrivateDriverSignup/>}>
                 <Route path='' element={<DriverSignUp/>}/>
             </Route>
+
+
+
+
+
+            {/* admin */}
+            <Route path='/adminsignup' element={<AdminSignUp/>}/>
+            <Route path='/adminemailverification' element={<AdminEmailVerification/>}/>
+            <Route path='/adminresendemailotp' element={<AdminResendEmailOTP/>}/>
+            <Route path="/adminlogin" element={<AdminLogin/>}/>
+            <Route path='/adminforgotpassword' element={<AdminForgotPassword/>}/>
+            <Route path='/adminresetpassword/:token' element={<AdminResetPassword/>}/>
+            <Route path='/admindashboard' element={<PrivateAdminDashboard/>}>
+                <Route path ='' element={<AdminDashboard/>}/>
+            </Route>
+
+
+            {/* user */}
+            <Route path="/userdashboard/userprofile/:id" element={<UserProfile />} />
+                            <Route path="/userdashboard/userrides" element={<UserRides />} />
+
+                            <Route path="/driverdashboard/driverprofile/:id" element={<DriverProfile/>}/>
+
         </Routes>
+        <FooterComponent/>
     </BrowserRouter>
   );
 }

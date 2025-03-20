@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { FaTaxi } from "react-icons/fa";
 import logo from '../Images/logo.jpeg';
 import 'animate.css';
+import { useSelector } from "react-redux";
+
 
 // Styled Components
 const Container = styled(motion.div)`
@@ -109,12 +111,16 @@ const dotAnimation = {
   },
 };
 
+
 const SplashScreen = () => {
   const navigate = useNavigate();
   const [dots, setDots] = useState([".", ".", "."]);
   const [showButton,setShowbutton]=useState(false)
-  const userOnboarded = false
-  const driverOnboarded = false
+  const userOnboarded = useSelector(state=>state.userOnboarded)
+  const driverOnboarded = useSelector(state=>state.driverOnboarded)
+  console.log(userOnboarded)
+  console.log(driverOnboarded)
+
 
   // Redirect to onboarding after 3 seconds
   useEffect(() => {
@@ -123,14 +129,17 @@ const SplashScreen = () => {
     }, 3000);
   }, [navigate]);
 
+  
+
   const handleUserNavigate=()=>{
         if(userOnboarded){
             navigate('/userdashboard')
         }else{
             navigate('/useronboarding')
         }
-
   }
+
+
 
   const handleDriverNavigate=()=>{
     if(driverOnboarded){
@@ -144,7 +153,7 @@ const SplashScreen = () => {
   return (
     <Container initial="hidden" animate="visible" variants={fadeIn}>
     
-      <Img src={logo} alt='logo' variants={bounce} className="animate__animated animate__bounce"/>
+      <Img src={logo} alt='logo' variants={bounce} className="animate__animated animate__slideInDown"/>
       <Title variants={fadeIn}>Welcome to LeosDrive</Title>
       <Subtitle variants={fadeIn}>Your Ride, Your Way</Subtitle>
       

@@ -1,7 +1,10 @@
+
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FaEnvelope } from "react-icons/fa";
+import Swal from 'sweetalert2'
 
 // Styled Components
 const Container = styled.div`
@@ -15,12 +18,12 @@ const Container = styled.div`
   color: black;
   text-align: center;
   padding: 20px;
-`;  
+`;
 
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 20px;
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
 `;
 
 const FormWrapper = styled.div`
@@ -40,7 +43,7 @@ const InputWrapper = styled.div`
 `;
 
 const Icon = styled.div`
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
   margin-right: 10px;
 `;
 
@@ -63,8 +66,15 @@ const ErrorText = styled.p`
   display: ${({ show }) => (show ? "block" : "none")};
 `;
 
+const SuccessText = styled.p`
+  color: green;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  display: ${({ show }) => (show ? "block" : "none")};
+`;
+
 const Button = styled.button`
-  background: rgba(0, 0, 255, 0.5);
+  background: #FE7C04;
   color: white;
   padding: 12px 24px;
   font-size: 1rem;
@@ -77,7 +87,7 @@ const Button = styled.button`
   margin-top: 10px;
 
   &:hover {
-    background: rgba(0, 0, 255, 0.7);
+    background: gray;
   }
 `;
 
@@ -88,7 +98,7 @@ const TextLink = styled.p`
   text-decoration: underline;
 
   &:hover {
-    color: rgba(0, 0, 255, 0.5);
+    color: #FE7C04;
   }
 `;
 
@@ -96,17 +106,69 @@ const UserForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleSubmit = (e) => {
+  
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+  
     if (!email.includes("@")) {
-      setError("Invalid email");
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Email",
+        text: "Please enter a valid email address.",
+      });
       return;
     }
-
-    console.log("Password reset link sent to:", email);
-    navigate("/reset-password");
+  
+    // Show loading alert
+    Swal.fire({
+      title: "Sending Reset Link...",
+      text: "Please wait while we process your request.",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  
+    try {
+      const response = await fetch("https://www.leosdrive.com/api/user_forgot_password.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: data.message,
+          confirmButtonColor: "#FE7C04",
+        }).then(() => {
+          // navigate("/userresetpassword");
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.error || "Something went wrong. Try again.",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Network Error",
+        text: "Please check your internet connection and try again.",
+      });
+    }
   };
+  
 
   return (
     <Container>
@@ -122,10 +184,12 @@ const UserForgotPassword = () => {
               onChange={(e) => {
                 setEmail(e.target.value);
                 setError("");
+                setSuccess("");
               }}
             />
           </InputWrapper>
           <ErrorText show={error}>{error}</ErrorText>
+          <SuccessText show={success}>{success}</SuccessText>
 
           <Button type="submit">Send Reset Link</Button>
           <TextLink onClick={() => navigate("/userlogin")}>Back to Login</TextLink>
@@ -136,3 +200,4 @@ const UserForgotPassword = () => {
 };
 
 export default UserForgotPassword;
+

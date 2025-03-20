@@ -1,7 +1,12 @@
+
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
+import { userLogin } from "../Features/Slice";
 
 // Styled Components
 const Container = styled.div`
@@ -20,16 +25,14 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 20px;
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
 `;
 
 const FormWrapper = styled.div`
-//   background: #f8f8f8;
   padding: 20px;
   border-radius: 10px;
   width: 90%;
   max-width: 400px;
-//   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 `;
 
 const InputWrapper = styled.div`
@@ -43,7 +46,7 @@ const InputWrapper = styled.div`
 `;
 
 const Icon = styled.div`
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
   margin-right: 10px;
 `;
 
@@ -54,29 +57,22 @@ const Input = styled.input`
   outline: none;
   color: black;
   font-size: 1rem;
-  padding-right: 30px; /* Space for the eye icon */
+  padding-right: 30px;
 
   ::placeholder {
     color: rgba(0, 0, 0, 0.6);
   }
 `;
 
-const ErrorText = styled.p`
-  color: red;
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-  display: ${({ show }) => (show ? "block" : "none")};
-`;
-
 const TogglePassword = styled.div`
   position: absolute;
   right: 10px;
   cursor: pointer;
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
 `;
 
 const Button = styled.button`
-  background: rgba(0, 0, 255, 0.5);
+  background: #FE7C04;
   color: white;
   padding: 12px 24px;
   font-size: 1rem;
@@ -89,8 +85,7 @@ const Button = styled.button`
   margin-top: 10px;
 
   &:hover {
-    background: rgba(0,0,255,0.7);
-
+    background: gray;
   }
 `;
 
@@ -101,42 +96,147 @@ const TextLink = styled.p`
   text-decoration: underline;
 
   &:hover {
-    color: rgba(0, 0, 255, 0.5);
+    color: #FE7C04;
   }
 `;
 
 const UserLogin = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Clear error on input
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Show loading alert
+  //   Swal.fire({
+  //     title: "Logging in...",
+  //     text: "Please wait",
+  //     allowOutsideClick: false,
+  //     didOpen: () => {
+  //       Swal.showLoading();
+  //     },
+  //   });
+
+  //   try {
+  //     const response = await fetch("https://www.leosdrive.com/api/user_login.php", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(formData),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (data.success) {
+  //       Swal.fire({
+  //         icon: "success",
+  //         title: "Login Successful!",
+  //         text: "Redirecting...",
+  //         timer: 2000,
+  //         showConfirmButton: false,
+  //       });
+
+  //       setTimeout(() => {
+  //         navigate("/userdashboard");
+  //       }, 2000);
+  //     } else if (data.error.includes("Email not verified")) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         title: "Verify Your Email",
+  //         text: "A new verification link has been sent to your email.",
+  //         confirmButtonText: "OK",
+  //       });
+  //     } else {
+  //       Swal.fire({
+  //         icon: "error",
+  //         title: "Login Failed",
+  //         text: data.error,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Error",
+  //       text: "Something went wrong. Please try again later.",
+  //     });
+  //   }
+  // };
+
+ 
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    let newErrors = {};
+  
+    Swal.fire({
+      title: "Logging in...",
+      text: "Please wait",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  
+    try {
+      const response = await fetch("https://www.leosdrive.com/api/user_login.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await response.json();
 
-    if (!formData.email.includes("@")) {
-      newErrors.email = "Invalid email";
+
+  
+      if (data.success) {
+        // localStorage.setItem("token", data.token); // Save token for future API calls
+          console.log(data)
+        Swal.fire({
+          icon: "success",
+          title: "Login Successful!",
+          text: "Redirecting...",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+  
+        setTimeout(() => {
+          navigate("/userdashboard");
+        }, 2000);
+        const userInfo = data.user;
+        const userToken = data.token;
+
+        // Dispatch login action with a single object containing both adminInfo and adminToken
+        dispatch(userLogin({ userInfo, userToken }));
+
+
+      } else if (data.error.includes("Email not verified")) {
+        Swal.fire({
+          icon: "warning",
+          title: "Email Not Verified",
+          text: "Check your email for a verification link and Verify here.",
+          confirmButtonText: "Verify Here",
+          allowOutsideClick:false,
+        });
+        navigate('/useremailverification')
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: data.error,
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Network Error",
+        text: "Unable to connect. Please check your internet connection.",
+      });
     }
-
-    if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    console.log("Login successful:", formData);
-    navigate("/userdashboard"); // Redirect after login
   };
+  
 
+ 
   return (
     <Container>
       <Title>User Login</Title>
@@ -153,9 +253,9 @@ const UserLogin = () => {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </InputWrapper>
-          <ErrorText show={errors.email}>{errors.email}</ErrorText>
 
           <InputWrapper>
             <Icon>
@@ -167,17 +267,21 @@ const UserLogin = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
+              required
             />
             <TogglePassword onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </TogglePassword>
           </InputWrapper>
-          <ErrorText show={errors.password}>{errors.password}</ErrorText>
 
           <Button type="submit">Login</Button>
 
-          <TextLink onClick={() => navigate("/userforgotpassword")}>Forgot Password?</TextLink>
-          <TextLink onClick={() => navigate("/usersignup")}>Don't have an account? Sign Up</TextLink>
+          <TextLink onClick={() => navigate("/userforgotpassword")}>
+            Forgot Password?
+          </TextLink>
+          <TextLink onClick={() => navigate("/usersignup")}>
+            Don't have an account? Sign Up
+          </TextLink>
         </form>
       </FormWrapper>
     </Container>
@@ -185,3 +289,4 @@ const UserLogin = () => {
 };
 
 export default UserLogin;
+

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FaCar, FaMapMarkerAlt, FaCreditCard } from "react-icons/fa";
+import { updateUserOnboarded } from "../Features/Slice";
+import { useDispatch } from "react-redux";
 
 // Styled Components
 const Container = styled.div`
@@ -11,7 +13,7 @@ const Container = styled.div`
   justify-content: center;
   height: 100vh;
   width: 100%;
-  background: rgba(0, 0, 255, 0.5);
+  background:#FE7C04;
   color: white;
   text-align: center;
   padding: 20px;
@@ -41,7 +43,7 @@ const Slide = styled.div`
 const IconWrapper = styled.div`
   font-size: 80px;
   margin-bottom: 20px;
-  color: yellow;
+  color: white;
 `;
 
 const Title = styled.h1`
@@ -67,7 +69,7 @@ const ButtonWrapper = styled.div`
 
 const Button = styled.button`
   background: white;
-  color: blue;
+  color: #333;
   padding: 12px 24px;
   font-size: 1rem;
   font-weight: bold;
@@ -77,7 +79,7 @@ const Button = styled.button`
   transition: background 0.3s ease;
 
   &:hover {
-    background: yellow;
+    background: gray;
     color: black;
   }
 `;
@@ -101,7 +103,7 @@ const Pagination = styled.div`
 
     &.active {
       opacity: 1;
-      background: yellow;
+      background: gray;
     }
   }
 `;
@@ -109,6 +111,7 @@ const Pagination = styled.div`
 const UserOnboarding = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const dispatch= useDispatch();
 
   const slides = [
     {
@@ -132,7 +135,8 @@ const UserOnboarding = () => {
     if (currentIndex < slides.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
     } else {
-      navigate("/userlogin");
+      navigate("/userdashboard");
+      dispatch(updateUserOnboarded(true));
     }
   };
 

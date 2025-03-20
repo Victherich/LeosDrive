@@ -1,0 +1,244 @@
+/* Main container: Map on left, Form on right */
+.book-ride-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+
+ 
+      
+  }
+  
+  /* Left side: Google Maps */
+  .map-container {
+    flex: 2;
+    height: 100%;
+  }
+  
+  /* Right side: Booking Form & Ride Details */
+  .right-container {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    position: relative;
+    /* flex-direction: column; */
+    /* box-shadow: rgba(0, 0, 0, 0.9) 0px 3px 8px; */
+    /* box-shadow: rgba(0, 0, 0, 0.9) 0px 5px 15px; */
+    border-radius: 10px;
+  }
+  
+  /* Form Container */
+  .form-container {
+    width: 80%;
+    text-align: center;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    height:250px;
+  }
+  
+  .form-container h2 {
+    color: #333;
+  }
+  
+  .form-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .book-button {
+    width: 100%;
+    padding: 10px;
+    background:  #fe7c04;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .book-button:hover {
+    background: orange;
+  }
+  
+  /* Ride Details Container */
+  .ride-details-container {
+    width: 80%;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    /* height: 320px; */
+  }
+  
+  .ride-details-container h2 {
+    color: #fe7c04;
+  }
+  
+  .ride-details-container p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+  }
+  
+  .confirm-button {
+    width: 48%;
+    padding: 10px;
+    background: #fe7c04;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 4%;
+  }
+  
+  .confirm-button:hover {
+    background:orange;
+  }
+  
+  .cancel-button {
+    width: 48%;
+    padding: 10px;
+    background: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .cancel-button:hover {
+    background: lightgray;
+  }
+
+  .LetsGoWrap{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 8px;
+    background-color: #fe7c04;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .LetsGoWrap:hover{
+    background-color: orange;
+  }
+
+  .LetsGoWrap img{
+    width:100px;
+    /* height: 50px; */
+  }
+
+  .LetsGoWrap p{
+    color: white;
+    font-weight: bold;
+  }
+
+
+  /* loading taxi */
+  .loading-container {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .road {
+    width: 100%;
+    height: 100px;
+    background-color: #ddd;
+    position: absolute;
+    bottom: 10%;
+    border-top: 5px solid #999;
+    border-bottom: 5px solid #999;
+  }
+  
+  .moving-car {
+    width: 100px;
+    position: absolute;
+    bottom: 30px;
+    animation: moveCar 3s linear infinite;
+  }
+  
+  @keyframes moveCar {
+    0% {
+      left: -120px;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+
+  .MinMaxWrap{
+display: none;
+gap:20px;
+justify-content: center;
+align-items: center;
+position: absolute;
+top:-30px;
+right:20px;
+/* z-index: ; */
+background-color: white;
+padding: 5px 10px;
+border-radius: 10px;
+  }
+
+  .MinmaxIcon{
+    color: #fe7c04;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  
+  
+  /* Responsive Design */
+  @media screen and (max-width: 884px) {
+    .book-ride-container {
+      flex-direction: column;
+  }
+
+  .MinMaxWrap{
+    display: flex;
+  }
+  
+    .map-container {
+      /* height: 50vh; */
+      overflow-y: scroll;
+    }
+  
+    .right-container {
+      position: absolute;
+      width:100%;
+      bottom: 0;
+      left:0;
+      /* height: 50vh; */
+      padding: 5px;
+      flex-direction: column;
+    }
+
+    .right-container2 {
+      position: absolute;
+      width:100%;
+      bottom: 0;
+      left:0;
+      height: 100px;
+      padding: 5px;
+      box-shadow: rgba(0, 0, 0, 0.9) 0px 5px 15px;
+    }
+  
+    .form-container,
+    .ride-details-container {
+      width: 100%;
+    }
+  }
+  

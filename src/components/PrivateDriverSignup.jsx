@@ -8,7 +8,7 @@ const PrivateDriverSignup = () => {
     // const userToken = useSelector(state=>state.userToken)
     const {driverToken}=useContext(Context)
   return (
-        !driverToken?<Outlet/>:<Navigate to="/"/>
+        <Outlet/>
   )
 }
 

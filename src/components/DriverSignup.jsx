@@ -1,7 +1,12 @@
+
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser, FaPhone } from "react-icons/fa";
+import axios from "axios";
+import Swal from "sweetalert2";
+import bg from "../Images/passenger.png";
 
 // Styled Components
 const Container = styled.div`
@@ -14,13 +19,25 @@ const Container = styled.div`
   background: white;
   color: black;
   text-align: center;
-  padding: 20px;
+  background-size: cover;
+  position: relative;
+
+  &::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
 `;
 
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 20px;
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
+  position: relative;
 `;
 
 const FormWrapper = styled.div`
@@ -28,6 +45,7 @@ const FormWrapper = styled.div`
   border-radius: 10px;
   width: 90%;
   max-width: 400px;
+  position: relative;
 `;
 
 const InputWrapper = styled.div`
@@ -41,7 +59,7 @@ const InputWrapper = styled.div`
 `;
 
 const Icon = styled.div`
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
   margin-right: 10px;
 `;
 
@@ -70,11 +88,11 @@ const TogglePassword = styled.div`
   position: absolute;
   right: 10px;
   cursor: pointer;
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
 `;
 
 const Button = styled.button`
-  background: rgba(0, 0, 255, 0.5);
+  background: #FE7C04;
   color: white;
   padding: 12px 24px;
   font-size: 1rem;
@@ -87,7 +105,7 @@ const Button = styled.button`
   margin-top: 10px;
 
   &:hover {
-    background: rgba(0, 0, 255, 0.7);
+    background: gray;
   }
 `;
 
@@ -98,13 +116,25 @@ const TextLink = styled.p`
   text-decoration: underline;
 
   &:hover {
-    color: rgba(0, 0, 255, 0.5);
+    color: #FE7C04;
   }
 `;
 
+
+
+
+
+
 const DriverSignUp = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -114,101 +144,88 @@ const DriverSignUp = () => {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    if (!formData.email.includes("@")) {
-      newErrors.email = "Invalid email";
-    }
-
-    if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.email.includes("@")) newErrors.email = "Invalid email";
+    if (!/^\d{10,15}$/.test(formData.phone)) newErrors.phone = "Phone must be 10-15 digits";
+    if (formData.password.length < 6) newErrors.password = "At least 6 characters required";
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    console.log("Sign-Up successful:", formData);
-    // navigate("/dashboard");
+    try {
+      Swal.fire({
+        title: "Signing Up...",
+        text: "Please wait while we create your account.",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await axios.post(
+        "https://www.leosdrive.com/api/driver_signup.php",
+        formData, // Send entire formData including confirmPassword
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+     if(response.data.success===true){
+      Swal.fire({ icon: "success", title: "Success!", text:response.data.message });
+        navigate("/driveremailverification");
+     }else{
+      Swal.fire({text:response.data.error})
+     }
+      console.log(response.data);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Sign-Up Failed",
+        text: error.response?.data?.error || "Something went wrong.",
+      });
+    }
   };
 
   return (
     <Container>
       <Title>Driver Sign Up</Title>
-
       <FormWrapper>
         <form onSubmit={handleSubmit}>
-          {/* Name Field */}
           <InputWrapper>
-            <Icon>
-              <FaUser />
-            </Icon>
-            <Input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={handleChange}
-            />
+            <Icon><FaUser /></Icon>
+            <Input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} />
           </InputWrapper>
           <ErrorText show={errors.name}>{errors.name}</ErrorText>
 
-          {/* Email Field */}
           <InputWrapper>
-            <Icon>
-              <FaEnvelope />
-            </Icon>
-            <Input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-            />
+            <Icon><FaEnvelope /></Icon>
+            <Input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
           </InputWrapper>
           <ErrorText show={errors.email}>{errors.email}</ErrorText>
 
-          {/* Password Field */}
           <InputWrapper>
-            <Icon>
-              <FaLock />
-            </Icon>
-            <Input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <Icon><FaPhone /></Icon>
+            <Input type="text" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} />
+          </InputWrapper>
+          <ErrorText show={errors.phone}>{errors.phone}</ErrorText>
+
+          <InputWrapper>
+            <Icon><FaLock /></Icon>
+            <Input type={showPassword ? "text" : "password"} name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
             <TogglePassword onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </TogglePassword>
           </InputWrapper>
           <ErrorText show={errors.password}>{errors.password}</ErrorText>
 
-          {/* Confirm Password Field */}
           <InputWrapper>
-            <Icon>
-              <FaLock />
-            </Icon>
-            <Input
-              type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
+            <Icon><FaLock /></Icon>
+            <Input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} />
             <TogglePassword onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </TogglePassword>
@@ -216,12 +233,14 @@ const DriverSignUp = () => {
           <ErrorText show={errors.confirmPassword}>{errors.confirmPassword}</ErrorText>
 
           <Button type="submit">Sign Up</Button>
-
           <TextLink onClick={() => navigate("/driverlogin")}>Already have an account? Login</TextLink>
         </form>
       </FormWrapper>
     </Container>
   );
 };
+
+
+
 
 export default DriverSignUp;

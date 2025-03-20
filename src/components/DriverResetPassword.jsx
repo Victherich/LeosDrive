@@ -1,6 +1,9 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 
 // Styled Components
@@ -20,7 +23,7 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 20px;
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
 `;
 
 const FormWrapper = styled.div`
@@ -41,7 +44,7 @@ const InputWrapper = styled.div`
 `;
 
 const Icon = styled.div`
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
   margin-right: 10px;
 `;
 
@@ -58,22 +61,15 @@ const Input = styled.input`
   }
 `;
 
-const ErrorText = styled.p`
-  color: red;
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-  display: ${({ show }) => (show ? "block" : "none")};
-`;
-
 const TogglePassword = styled.div`
   position: absolute;
   right: 10px;
   cursor: pointer;
-  color: rgba(0, 0, 255, 0.5);
+  color: #FE7C04;
 `;
 
 const Button = styled.button`
-  background: rgba(0, 0, 255, 0.5);
+  background:#FE7C04;
   color: white;
   padding: 12px 24px;
   font-size: 1rem;
@@ -86,31 +82,70 @@ const Button = styled.button`
   margin-top: 10px;
 
   &:hover {
-    background: rgba(0, 0, 255, 0.7);
+    background: gray;
   }
 `;
 
 const DriverResetPassword = () => {
   const navigate = useNavigate();
+  const { token } = useParams(); // Get token from URL
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (!token) {
+      Swal.fire("Error", "Invalid or missing token.", "error");
+      navigate("/driverlogin");
+    }
+  }, [token, navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      Swal.fire("Error", "Password must be at least 6 characters", "error");
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      Swal.fire("Error", "Passwords do not match", "error");
       return;
     }
 
-    console.log("Password reset successfully");
-    navigate("/driverlogin");
+    try {
+      Swal.fire({
+        title: "Please wait...",
+        text: "Resetting your password...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await fetch("https://www.leosdrive.com/api/driver_reset_password.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+          password,
+          confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        Swal.fire("Success", data.message, "success");
+        setTimeout(() => navigate("/driverlogin"), 3000);
+      } else {
+        Swal.fire("Error", data.error || "Something went wrong", "error");
+      }
+    } catch (error) {
+      Swal.fire("Error", "Network error. Please try again later.", "error");
+    }
   };
 
   return (
@@ -143,8 +178,6 @@ const DriverResetPassword = () => {
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </TogglePassword>
           </InputWrapper>
-
-          <ErrorText show={error}>{error}</ErrorText>
 
           <Button type="submit">Reset Password</Button>
         </form>
