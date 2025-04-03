@@ -125,6 +125,11 @@ import bike from '../Images/bike.png'
 
 const Container2 = styled.div`
   display:flex;
+
+
+  @media(max-width:768px){
+    flex-direction:column;
+  }
 `
 
 
@@ -221,7 +226,11 @@ p{
     color:#333;
     text-align:center
 }
-`
+
+@media(max-width:768px){
+  width:100%;
+}
+` 
 
 
 const DriverHomePage = () => {

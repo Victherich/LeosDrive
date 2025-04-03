@@ -49,6 +49,9 @@ import MyDeliveryBookings from './components/MyDeliveryBookings';
 import DeliveryDetails from './components/DeliveryDetail';
 import DriverCompletedRides2 from './components/DriverCompletedRides2';
 import AdminDeliveryDetail from './components/AdminDeliveryDetail';
+import FoodDeliveryForm from './components/FoodBookingForm';
+import UserFoodDeliveries from './components/UserFoodDeliveries';
+import AboutUs from './components/AboutUs';
 
 
 function App() {
@@ -70,6 +73,7 @@ function App() {
             <Route path='/driverresendemailotp' element={<DriverResendEmailOTP/>}/>
             <Route path='/useremailverification' element={<UserEmailVerification/>}/>
             <Route path='/userresendemailotp' element={<UserResendEmailOTP/>}/>
+            <Route path='/aboutus' element={<AboutUs/>}/>
 
             <Route path='/termsandconditions' element={<TermsAndPrivacy/>}/>
             <Route path='/contactus' element = {<ContactUs/>}/>
@@ -78,6 +82,7 @@ function App() {
             <Route path='/userdashboard/deliveryform/:user_id' element={<DeliveryForm/>}/>
             <Route path='/userdashboard/mydeliverybookings/:user_id' element={<MyDeliveryBookings/>}/>
             <Route path='/userdashboard/mydelivery/:id' element={<DeliveryDetails/>}/>
+            <Route path='/userdashboard/userfooddeliveries/:user_id' element={<UserFoodDeliveries/>}/>
 
 
 
@@ -117,7 +122,7 @@ function App() {
 
 
             {/* admin */}
-            <Route path='/adminsignup' element={<AdminSignUp/>}/>
+            {/* <Route path='/adminsignup' element={<AdminSignUp/>}/> */}
             <Route path='/adminemailverification' element={<AdminEmailVerification/>}/>
             <Route path='/adminresendemailotp' element={<AdminResendEmailOTP/>}/>
             <Route path="/adminlogin" element={<AdminLogin/>}/>
@@ -128,7 +133,8 @@ function App() {
             </Route>
 
             <Route path='/deliverydetail/:id' element={<AdminDeliveryDetail/>}/>
-
+            <Route path='userdashboard/foodform/:user_id' element={<FoodDeliveryForm/>}/>
+ 
 
             {/* user */}
             <Route path="/userdashboard/userprofile/:id" element={<UserProfile />} />

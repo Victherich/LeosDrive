@@ -77,7 +77,7 @@ const FooterComponent = () => {
     const navigate = useNavigate();
 
 
-if (!["/", "/termsandconditions", "/contactus"].includes(location.pathname)) {
+if (!["/",'/aboutus',  "/termsandconditions", "/contactus"].includes(location.pathname)) {
     return null;
 }
 
@@ -96,8 +96,8 @@ if (!["/", "/termsandconditions", "/contactus"].includes(location.pathname)) {
            
               </Brand>
               <FooterNav>
-                <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }}>Home</NavItem>
-                {/* <NavItem whileHover={{ scale: 1.1 }}>About</NavItem> */}
+                <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }} onClick={()=>navigate('/')}>Home</NavItem>
+                <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }} onClick={()=>navigate('/aboutus')}>About Us</NavItem>
                 <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }} onClick={()=>navigate('/termsandconditions')}>Terms and Conditions</NavItem>
                 <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }} onClick={()=>navigate('/contactus')}>Contact Us</NavItem>
               </FooterNav>

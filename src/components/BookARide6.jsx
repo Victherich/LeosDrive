@@ -208,7 +208,7 @@
 
 
 // 3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FaLocationArrow, FaMapMarkerAlt , FaUser, FaPhone, FaCar, FaIdCard, FaGoodreads, } from "react-icons/fa";
 import styled from "styled-components";
 import Swal from "sweetalert2";
@@ -222,6 +222,7 @@ import { database } from "./firebaseConfig";
 import { ref, set, push, onValue, get, child, remove  } from "firebase/database";
 import taxigif from '../Images/taxigif.gif';
 import foodbike from '../Images/foodbike.png';
+import { Context } from "./Context";
 
 
 
@@ -233,6 +234,15 @@ const Container = styled.div`
   padding:30px 30px;
   background-color: #f4f4f4;
   gap:50px;
+  height:auto;
+  
+
+  @media(max-width:768px){
+    flex-direction:column;
+    align-items:center;
+    // justify-content:center;
+    min-height:auto;
+  }
 `;
 
 const Form = styled.div`
@@ -240,8 +250,8 @@ const Form = styled.div`
   padding: 20px;
   border-radius: 8px;
 
-  width: 100%;
-  max-width: 400px;
+  
+  width: 300px;
   text-align: center;
 `;
 
@@ -293,7 +303,7 @@ background:rgba(0,0,0,0.2);
 color:white;
 padding:10px;
 border-radius:10px;
-width:20%;
+width:250px;
 display:flex;
 flex-direction:column;
 // justify-content:center;
@@ -317,6 +327,7 @@ const Delivery = styled.div`
     display:flex;
     flex-direction:column;
     width:250px;
+    padding:10px;
     height:250px;
     justify-content:center;
     align-items:center;
@@ -324,6 +335,7 @@ const Delivery = styled.div`
     border-radius:20px;
     cursor:pointer;
     margin-top:30px;
+
 
     &:hover{
         background:orange;
@@ -382,7 +394,8 @@ const bookingNumber = useSelector(state=>state.bookingNumber)
 const [rideInfo, setRideInfo] = useState(null);
 const [ongoingRideInfo, setOngoingRideInfo] = useState(null);
 const [completedRideInfo, setCompletedRideInfo] = useState(null);
-console.log(completedRideInfo)
+// console.log(completedRideInfo)
+const {rates}=useContext(Context);
 // console.log(bookingNumber)
 
 const navigate = useNavigate()
@@ -631,6 +644,7 @@ const handleCancelRide = async () => {
             // Clear ride details
             dispatch(updateBookingNumber(null));
             setRideInfo(null);
+            window.location.reload();
           } else {
             throw new Error("Ride not found");
           }
@@ -692,6 +706,7 @@ const handleCancelRide2 = async () => {
               // Clear ride details
               dispatch(updateBookingNumber(null));
               setRideInfo(null);
+              window.location.reload();
             } else {
               throw new Error("Ride not found");
             }
@@ -894,6 +909,8 @@ useEffect(() => {
       if (ongoingRides.length > 0) {
         setOngoingRideInfo(ongoingRides[0]); // ✅ Set the first ride (modify if multiple needed)
         setRideInfo(!null)
+        fetchOngoingRides2();
+        Swal.fire({text:"ongoing ride"})
       } else {
         setOngoingRideInfo(null);
       }
@@ -959,7 +976,7 @@ const [rideUpdate, setRideUpdate] = useState({
   });
   const [startLocation, setStartLocation] = useState(null); // Start location
   const [currentLocation, setCurrentLocation] = useState(null); // Current location of the driver
-  const ratePerKm = 100; // Example rate per km, adjust accordingly
+  const ratePerKm = rates; // Example rate per km, adjust accordingly
 
 // number 2
   const getCurrentLocation = () => {
@@ -1060,6 +1077,7 @@ const fetchOngoingRides2 = async () => {
 
 const resetDisplays = ()=>{
     dispatch(updateBookingNumber(null))
+    window.location.reload();
 }
 
 
@@ -1215,7 +1233,7 @@ return (
 
       <Delivery onClick={() => navigate(`/userdashboard/foodform/${userInfo.id}`)}>
         <img src={foodbike} alt="bike"/>
-        <h3>Food Deliery</h3>
+        <h3>Food Delivery</h3>
         <p>Receive instant food Delivery</p>
       </Delivery>
     </Container>

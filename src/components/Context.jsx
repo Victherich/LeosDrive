@@ -48,10 +48,40 @@ const ContextProvider = ({children}) => {
     }
 };
 
+
+//fetching ride rates
+
+const [rates, setRates]=useState(null)
+
+ const fetchRates = async () => {
+    try {
+      const res = await fetch('https://www.leosdrive.com/api/fetch_rates.php');
+      const data = await res.json();
+      if (data.success) setRates(data.rates);
+    } catch (err) {
+    //   Swal.fire('Error', 'Failed to fetch rates', 'error');
+      console.error(err)
+    }
+  };
+
+  useEffect(() => {
+    const id = setInterval(() => {
+        fetchRates();
+    }, 180000); // 3 minutes = 180,000 ms
+
+    return () => clearInterval(id); // Cleanup interval on unmount
+}, []);
+
+
+
+
+
  
 
   return (
-    <Context.Provider value={{userToken, driverToken, adminToken, adminPages, setAdminPages, fetchDriverById, verificationStatus, setVerificationStatus}}>
+    <Context.Provider value={{userToken, driverToken, adminToken, adminPages, setAdminPages,
+     fetchDriverById, verificationStatus, setVerificationStatus,
+     rates}}>
         {children}
     </Context.Provider>
   )

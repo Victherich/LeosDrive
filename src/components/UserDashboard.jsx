@@ -91,7 +91,14 @@ const SidebarItem = styled.button`
 const Content = styled.div`
   flex: 1;
   // padding: 15px;
-  overflow-y: auto;
+  overflow-y: scroll;
+
+
+
+  @media(max-width:768px){
+    display:flex;
+    flex-direction:column;
+  }
 `;
 
 const BottomNav = styled.div`
@@ -189,6 +196,7 @@ const UserDashboard = () => {
             <SidebarItem onClick={() => { navigate(`/userdashboard/userprofile/${userInfo.id}`); setMenuOpen(false); }}>👤 Profile</SidebarItem>
             <SidebarItem onClick={() => { navigate('/userdashboard/userrides'); setMenuOpen(false); }}>🚖 My Rides</SidebarItem>
             <SidebarItem onClick={() => { navigate(`/userdashboard/mydeliverybookings/${userInfo.id}`); setMenuOpen(false); }}>📦 My Delivery Bookings</SidebarItem>
+            <SidebarItem onClick={() => { navigate(`/userdashboard/userfooddeliveries/${userInfo.id}`); setMenuOpen(false); }}>🍕 My Food Deliveries</SidebarItem>
             
             <SidebarItem onClick={handleLogout}>🏃‍♂️ Logout</SidebarItem>
           </Sidebar>

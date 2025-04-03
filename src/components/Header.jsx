@@ -146,7 +146,7 @@ const HeaderComponent = () => {
       }, [mobileMenu]);
 
 
-    if (!["/", "/termsandconditions", "/contactus"].includes(location.pathname)) {
+    if (!["/", '/aboutus', "/termsandconditions", "/contactus"].includes(location.pathname)) {
         return null;
     }
   return (
@@ -161,7 +161,7 @@ const HeaderComponent = () => {
 
            <FooterNav>
                 <NavItem whileHover={{ scale: 1.1 }} onClick={()=>navigate('/')}>Home</NavItem>
-                {/* <NavItem whileHover={{ scale: 1.1 }}>About</NavItem> */}
+                <NavItem whileHover={{ scale: 1.1 }} onClick={()=>navigate('/aboutus')}>About Us</NavItem>
                 <NavItem whileHover={{ scale: 1.1 }} onClick={()=>navigate('/termsandconditions')}>Terms and Conditions</NavItem>
                 <NavItem whileHover={{ scale: 1.1 }} onClick={()=>navigate('/contactus')}>Contact Us</NavItem>
               </FooterNav>

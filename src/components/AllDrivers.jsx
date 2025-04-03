@@ -125,6 +125,9 @@ const AllDrivers = () => {
     .then((data) => {
       if (data.success) {
         setDrivers(data.drivers);
+
+        console.log(data.drivers)
+
       } else {
         setError(data.error);
       }
@@ -290,6 +293,12 @@ const AllDrivers = () => {
                 <p><strong>Status:</strong> <StatusBadge status={driver.status}>{driver.status.toUpperCase()}</StatusBadge></p>
               <Button onClick={()=>handleSuspendDriver(driver.driver_id)} >Suspend</Button>
               <Button onClick={()=>handleApproveDriver(driver.driver_id)}>Approve / Make Active</Button>
+              <Button onClick={() => window.open(`https://www.leosdrive.com/api/${driver.document}`, "_blank")}>
+  View Documents
+</Button>
+
+              
+              
               </CarDetails>
             ):<h4 style={{color:"red"}}>Documents not submitted</h4>}
           </UserCard>

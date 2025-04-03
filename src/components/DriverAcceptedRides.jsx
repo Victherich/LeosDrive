@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ref, get, push, set, remove } from "firebase/database";
 import { database } from "./firebaseConfig"; // Adjust this import
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Context } from "./Context";
 // 🌟 Styled Components for Beautiful UI
 const Container = styled.div`
   max-width: 800px;
@@ -60,6 +61,7 @@ const DriverAcceptedRides = () => {
   const [loading, setLoading] = useState(true);
 //   console.log(driverId)
   const [user, setUser] = useState({})
+  const {rates} = useContext(Context)
 
 //   console.log(user)
 
@@ -281,7 +283,7 @@ const [rideUpdate, setRideUpdate] = useState({
   });
   const [startLocation, setStartLocation] = useState(null); // Start location
   const [currentLocation, setCurrentLocation] = useState(null); // Current location of the driver
-  const ratePerKm = 100; // Example rate per km, adjust accordingly
+  const ratePerKm = rates // Example rate per km, adjust accordingly
 
 // number 2
   const getCurrentLocation = () => {

@@ -280,6 +280,7 @@ const AdminDeliveryDetails = () => {
         if (response.data.success) {
           setDelivery(response.data.delivery);
           setStatus(response.data.delivery.status);
+          console.log(response.data)
         } else {
           setError(response.data.error);
         }
@@ -357,6 +358,10 @@ Swal.showLoading();
           <InfoRow><strong>Package:</strong> {delivery.package_description}</InfoRow>
           <InfoRow><strong>Weight:</strong> {delivery.package_weight} kg</InfoRow>
           <InfoRow><strong>Cost:</strong> NGN {delivery.delivery_cost}</InfoRow>
+          <InfoRow><strong>Length:</strong> {delivery.package_length} cm</InfoRow>
+          <InfoRow><strong>Width:</strong> {delivery.package_width} cm</InfoRow>
+          <InfoRow><strong>Height:</strong> {delivery.package_height} cm</InfoRow>
+          <InfoRow><strong>Transaction Ref:</strong> NGN {delivery.transaction_reference}</InfoRow>
           <InfoRow><strong>Created At:</strong> {new Date(delivery.created_at).toLocaleString()}</InfoRow>
         </InfoContainer>
 

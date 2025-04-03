@@ -222,6 +222,8 @@ import RideRateManagement from "./RideRateManagement";
 import CommissionRateManagement from "./CommisionRateManagement";
 import DriverCompletedRides2 from "./DriverCompletedRides2";
 import AllDeliveriesPage from "./AllDeliveries";
+import AdminFoodDeliveries from "./AdminFoodDeliveries";
+import AdminSignUp from "./AdminSignUp";
 
 
 // Styled Components
@@ -397,7 +399,8 @@ const AdminDashboard = () => {
             <SidebarItem onClick={() => { setAdminPages(4); setMenuOpen(false); }}>📊 Rate Management</SidebarItem>
             <SidebarItem onClick={() => { setAdminPages(5); setMenuOpen(false); }}>💸 Commission Management</SidebarItem>
             <SidebarItem onClick={() => { setAdminPages(6); setMenuOpen(false); }}>📦 Deliveries</SidebarItem>
-            {/* <SidebarItem onClick={() => { setAdminPages(7); setMenuOpen(false); }}> Search Deliveries</SidebarItem> */}
+            <SidebarItem onClick={() => { setAdminPages(7); setMenuOpen(false); }}>🍕 Food Deliveries</SidebarItem>
+            <SidebarItem onClick={() => { setAdminPages(8); setMenuOpen(false); }}>📝 Register An Admin</SidebarItem>
             
            
              <SidebarItem onClick={handleLogout}>🏃‍♂️ Logout</SidebarItem>
@@ -413,6 +416,8 @@ const AdminDashboard = () => {
          {adminPages===4&&<RideRateManagement/>}
          {adminPages===5&&<CommissionRateManagement/>}
          {adminPages===6&&<AllDeliveriesPage/>}
+         {adminPages===7&&<AdminFoodDeliveries/>}
+         {adminPages===8&&<AdminSignUp/>}
         </Content>
 
         {/* Bottom Navigation */}

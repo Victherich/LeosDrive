@@ -28,6 +28,11 @@ const AppContainer = styled.div`
   align-items: center;
   height: 100vh;
   background: #f5f5f5;
+
+
+  
+
+
 `;
 
 const PhoneFrame = styled.div`

@@ -60,7 +60,7 @@ const BackArrow = () => {
   const location = useLocation();
 
   // Routes where the Back Arrow should NOT appear
-  const hiddenRoutes = ["/driverdashboard", "/admindashboard", "/userdashboard",'/', '/contactus', '/termsandconditions'] ;
+  const hiddenRoutes = ["/driverdashboard",'/aboutus', "/admindashboard", "/userdashboard",'/', '/contactus', '/termsandconditions'] ;
 
   if (hiddenRoutes.includes(location.pathname)) {
     return null; // Don't render on these pages
