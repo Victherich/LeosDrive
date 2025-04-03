@@ -220,6 +220,8 @@ import AllDrivers from "./AllDrivers";
 import SearchDriver from "./SearchDriver";
 import RideRateManagement from "./RideRateManagement";
 import CommissionRateManagement from "./CommisionRateManagement";
+import DriverCompletedRides2 from "./DriverCompletedRides2";
+import AllDeliveriesPage from "./AllDeliveries";
 
 
 // Styled Components
@@ -261,13 +263,19 @@ const Sidebar = styled.div`
   position: absolute;
   top: 0;
   right: ${({ isOpen }) => (isOpen ? "0" : "-220px")}; 
-  width: 220px;
+  width: 350px;
   height: 100%;
   background: white;
   box-shadow: ${({ isOpen }) => (isOpen ? "-2px 0 5px rgba(0, 0, 0, 0.2)" : "none")}; 
   transition: right 0.3s ease; 
   padding: 15px;
   z-index:9999;
+
+
+  @media(max-width:428px){
+    width:220px;
+  }
+
 `;
 
 const SidebarItem = styled.button`
@@ -386,8 +394,11 @@ const AdminDashboard = () => {
           <Sidebar isOpen={menuOpen} ref={menuRef}>
             <SidebarItem onClick={() => { setAdminPages(0); setMenuOpen(false); }}>🏠 Home</SidebarItem>
             <SidebarItem onClick={() => { setAdminPages(3); setMenuOpen(false); }}>🔍 Search Driver</SidebarItem>
-            <SidebarItem onClick={() => { setAdminPages(4); setMenuOpen(false); }}> Rate Management</SidebarItem>
-            <SidebarItem onClick={() => { setAdminPages(5); setMenuOpen(false); }}> Commission Management</SidebarItem>
+            <SidebarItem onClick={() => { setAdminPages(4); setMenuOpen(false); }}>📊 Rate Management</SidebarItem>
+            <SidebarItem onClick={() => { setAdminPages(5); setMenuOpen(false); }}>💸 Commission Management</SidebarItem>
+            <SidebarItem onClick={() => { setAdminPages(6); setMenuOpen(false); }}>📦 Deliveries</SidebarItem>
+            {/* <SidebarItem onClick={() => { setAdminPages(7); setMenuOpen(false); }}> Search Deliveries</SidebarItem> */}
+            
            
              <SidebarItem onClick={handleLogout}>🏃‍♂️ Logout</SidebarItem>
           </Sidebar>
@@ -401,11 +412,12 @@ const AdminDashboard = () => {
          {adminPages===3&&<SearchDriver/>}
          {adminPages===4&&<RideRateManagement/>}
          {adminPages===5&&<CommissionRateManagement/>}
+         {adminPages===6&&<AllDeliveriesPage/>}
         </Content>
 
         {/* Bottom Navigation */}
         <BottomNav>
-          <NavIcon active onClick={() => navigate('/admindashboard')}>
+          <NavIcon active onClick={() => { setAdminPages(0); setMenuOpen(false); }}>
             <FaHome />
           </NavIcon>
           {/* <NavIcon onClick={() => navigate('/userdashboard/userrides')}>

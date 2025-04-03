@@ -75,3 +75,9 @@ export default ContextProvider
 // Geocoding API
 // Places API
 // Directions API
+
+
+
+
+// real time database
+// https://console.firebase.google.com/u/6/project/taxi1-app/database/taxi1-app-default-rtdb/data/~2F

@@ -23,8 +23,10 @@ const FooterContent = styled.div`
 
 const Brand = styled.div`
   display: flex;
-  align-items: center;
+  // align-items: center;
   gap: 10px;
+  flex-direction:column;
+  text-align:left;
 
   h2 {
     color: #FE7C04;
@@ -34,10 +36,18 @@ const Brand = styled.div`
 const FooterNav = styled.nav`
   display: flex;
   gap: 20px;
+  flex-direction:column;
+  text-align:left;
+@media(max-width:768px){
+  
+  padding: 50px 0px;
+  
+}
+
 `;
 
 const NavItem = styled(motion.p)`
-  cursor: pointer;
+  
   font-weight: bold;
 `;
 
@@ -78,13 +88,20 @@ if (!["/", "/termsandconditions", "/contactus"].includes(location.pathname)) {
               <Brand>
                 <FaTaxi size={30} color="#FE7C04" />
                 <h2>LoesDrive</h2>
+             
+                <NavItem>123 Main Street, Lagos, Nigeria</NavItem>
+
+                <NavItem>support@loesdrive.com</NavItem>
+                <NavItem>+234 800 123 4567</NavItem>
+           
               </Brand>
               <FooterNav>
-                <NavItem whileHover={{ scale: 1.1 }}>Home</NavItem>
+                <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }}>Home</NavItem>
                 {/* <NavItem whileHover={{ scale: 1.1 }}>About</NavItem> */}
-                <NavItem whileHover={{ scale: 1.1 }} onClick={()=>navigate('/termsandconditions')}>Terms and Conditions</NavItem>
-                <NavItem whileHover={{ scale: 1.1 }} onClick={()=>navigate('/contactus')}>Contact Us</NavItem>
+                <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }} onClick={()=>navigate('/termsandconditions')}>Terms and Conditions</NavItem>
+                <NavItem style={{cursor:"pointer"}} whileHover={{ scale: 1.1 }} onClick={()=>navigate('/contactus')}>Contact Us</NavItem>
               </FooterNav>
+              
               <SocialIcons>
                 <motion.a whileHover={{ scale: 1.2 }} href="#"><FaFacebook size={24} /></motion.a>
                 <motion.a whileHover={{ scale: 1.2 }} href="#"><FaTwitter size={24} /></motion.a>
@@ -92,7 +109,7 @@ if (!["/", "/termsandconditions", "/contactus"].includes(location.pathname)) {
               </SocialIcons>
             </FooterContent>
             <Copyright>
-              &copy; {new Date().getFullYear()} Loe'sDrive. All rights reserved.
+              &copy; {new Date().getFullYear()} LoesDrive. All rights reserved.
             </Copyright>
           </Footer>
   )

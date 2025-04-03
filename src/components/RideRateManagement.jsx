@@ -61,6 +61,7 @@ const RideRateManagement = () => {
   const [amount, setAmount] = useState('');
   const [rates, setRates] = useState([]);
   const [editingRate, setEditingRate] = useState(null);
+  const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     fetchRates();
@@ -124,12 +125,12 @@ const RideRateManagement = () => {
       <Form onSubmit={handleSubmit}>
         <p>Enter Ride Rate: eg (0, 1, 2, 3.2, 4.1 etc)</p>
         <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required />
-        <Button type="submit">{editingRate ? 'Update' : 'Create'} Rate</Button>
+       {showButton && <Button type="submit">{editingRate ? 'Update' : 'Create'} Rate</Button>}
       </Form>
       {rates.map((rate) => (
         <RateCard key={rate.id}>
-          <p>Amount: ${rate.amount}</p>
-          <Button onClick={() => {setEditingRate(rate);setAmount(rate.amount)}}>Edit</Button>
+          <p>Amount: NGN {rate.amount}</p>
+          <Button onClick={() => {setEditingRate(rate);setAmount(rate.amount); setShowButton(!showButton)}}>Edit</Button>
           {/* <Button onClick={() => deleteRate(rate.id)}>Delete</Button> */}
         </RateCard>
       ))}

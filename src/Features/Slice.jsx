@@ -209,6 +209,7 @@ const MySlice = createSlice({
     driverToken: null,
     userOnboarded: false,
     driverOnboarded: false,
+  bookingNumber:null,
   },
   reducers: {
     // Admin actions
@@ -266,6 +267,12 @@ const MySlice = createSlice({
     updateDriverOnboarded: (state, { payload }) => {
       state.driverOnboarded = payload;
     },
+
+    updateBookingNumber:(state, {payload})=>{
+      state.bookingNumber = payload;
+    },
+
+    
   },
 });
 
@@ -281,6 +288,7 @@ export const {
   updateDriverInfo,
   updateUserOnboarded,
   updateDriverOnboarded,
+  updateBookingNumber,
 } = MySlice.actions;
 
 export default MySlice.reducer;

@@ -13,6 +13,10 @@ import UserProfile from "./UserProfile";
 import UserRides from "./UserRides";
 import BookARide2 from "./BookARide2";
 import BookARide3 from "./BookARide3";
+// import BookARide4 from './BookARide4';
+import GoogleMapComponent from "./BookARide4";
+import TaxiBooking from "./BookARide5";
+import BookARide6 from "./BookARide6";
 
 
 // Styled Components
@@ -54,13 +58,17 @@ const Sidebar = styled.div`
   position: absolute;
   top: 0;
   right: ${({ isOpen }) => (isOpen ? "0" : "-220px")}; 
-  width: 220px;
+  width:300px;
   height: 100%;
   background: white;
   box-shadow: ${({ isOpen }) => (isOpen ? "-2px 0 5px rgba(0, 0, 0, 0.2)" : "none")}; 
   transition: right 0.3s ease; 
   padding: 15px;
   z-index:9999;
+
+  @media(max-width:428px){
+    width:220px;
+  }
 `;
 
 const SidebarItem = styled.button`
@@ -74,7 +82,7 @@ const SidebarItem = styled.button`
   color: #333;
   
   &:hover {
-    background: #fe7c04;
+    background: #fe7c04;  
     color: white;
     border-radius: 5px;
   }
@@ -82,7 +90,7 @@ const SidebarItem = styled.button`
 
 const Content = styled.div`
   flex: 1;
-  padding: 15px;
+  // padding: 15px;
   overflow-y: auto;
 `;
 
@@ -124,6 +132,7 @@ const UserDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userInfo = useSelector(state=>state.userInfo)
+  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -179,6 +188,8 @@ const UserDashboard = () => {
             <SidebarItem onClick={() => { navigate('/userdashboard'); setMenuOpen(false); }}>🏠 Home</SidebarItem>
             <SidebarItem onClick={() => { navigate(`/userdashboard/userprofile/${userInfo.id}`); setMenuOpen(false); }}>👤 Profile</SidebarItem>
             <SidebarItem onClick={() => { navigate('/userdashboard/userrides'); setMenuOpen(false); }}>🚖 My Rides</SidebarItem>
+            <SidebarItem onClick={() => { navigate(`/userdashboard/mydeliverybookings/${userInfo.id}`); setMenuOpen(false); }}>📦 My Delivery Bookings</SidebarItem>
+            
             <SidebarItem onClick={handleLogout}>🏃‍♂️ Logout</SidebarItem>
           </Sidebar>
         )}
@@ -186,7 +197,7 @@ const UserDashboard = () => {
         {/* Main Content (Render Based on Route) */}
         <Content>
           <Routes>
-            <Route path="/" element={<BookARide3 />} />
+            <Route path="/" element={<BookARide6 />} />
             
           </Routes>
         </Content>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { FaUser, FaEnvelope, FaPhone, FaSearch, FaCar } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 // Styled Components
 const Container = styled.div`
@@ -106,6 +107,8 @@ const SearchDriver = () => {
   const [email, setEmail] = useState("");
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  
 
   const handleSearch = async () => {
     if (!email.trim()) {
@@ -268,8 +271,8 @@ const SearchDriver = () => {
             <ButtonWrap>
             <Button onClick={()=>handleSuspendDriver(driver.driver_id)}>Suspend</Button>
             <Button onClick={()=>handleApproveDriver(driver.driver_id)}>Approve / Make Active</Button>
-            <Button>Earnings</Button>
-            <Button>Rides</Button>
+            <Button onClick={()=>navigate(`/driverdashboard/completedRides2/${driver.driver_id}`)}>Rides and Earnings</Button>
+            {/* <Button>Rides</Button> */}
             </ButtonWrap>
           </DriverCard>
         ))}

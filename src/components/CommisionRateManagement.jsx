@@ -204,6 +204,7 @@ const CommissionRateManagement = () => {
   const [amount, setAmount] = useState('');
   const [rates, setRates] = useState([]);
   const [editingRate, setEditingRate] = useState(null);
+  const [showButton, setShowButton]=useState(false)
 
   useEffect(() => {
     fetchRates();
@@ -287,16 +288,16 @@ const CommissionRateManagement = () => {
           onChange={(e) => setAmount(e.target.value)}
           required
         />
-        <Button type="submit">
+       {showButton && <Button type="submit">
           {editingRate ? 'Update' : 'Create'} Rate
-        </Button>
+        </Button>}
       </Form>
 
       {rates.length > 0 ? (
         rates.map((rate) => (
           <RateCard key={rate.id}>
             <p>Rate: % {rate.amount}</p>
-            <Button onClick={() => { setEditingRate(rate); setAmount(rate.amount); }}>
+            <Button onClick={() => { setEditingRate(rate); setAmount(rate.amount); setShowButton(!showButton)}}>
               Edit
             </Button>
             {/* <Button

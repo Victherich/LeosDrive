@@ -280,11 +280,8 @@ const LandingPage = () => {
 
       {/* About Section */}
       <AboutSection>
-        <motion.div
-          className="text"
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
+        <div
+      
         >
           <h1>About LoesDrive</h1>
           <p>
@@ -292,13 +289,9 @@ const LandingPage = () => {
             across the city. Whether you're heading to work, meeting friends, or 
             exploring new places, we've got you covered.
           </p>
-        </motion.div>
-        <motion.img
-          src={aboutImage}
-          alt="About Us"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
+        </div>
+        <img src={aboutImage} alt="abtimg"
+         
         />
       </AboutSection>
 
@@ -409,10 +402,41 @@ const Section = styled.section`
 `;
 
 /* About Section */
-const AboutSection = styled(Section)`
+const AboutSection = styled.div`
   background: #f4f4f4;
   text-align:left;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:50px 0px;
+
+  div{
+  width:50%;
+
+  h1{
+  color:#FE7C04
+  }
+  }
+  img{
+  border-radius:10px;
+  width:300px;
+  }
+
+
+
+  @media(max-width:768px){
+  flex-direction:column;
+  padding:50px 20px;
+  gap:50px;
+  text-align:center;  
+    div{
+    width:100%;
+    }
+
+  }
 `;
+
+
 
 /* Ride & Drive Section (Merged) */
 const RideDriveSection = styled.section`
@@ -424,6 +448,10 @@ const RideDriveSection = styled.section`
   background: #fff;
   gap: 20px;
   background-image:url(${tbg});
+
+@media(max-width:768px){
+  padding:100px 10px;
+}
 
 `;
 

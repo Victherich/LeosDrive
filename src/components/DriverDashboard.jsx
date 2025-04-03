@@ -60,13 +60,17 @@ const Sidebar = styled.div`
   position: absolute;
   top: 0;
   right: ${({ isOpen }) => (isOpen ? "0" : "-220px")}; 
-  width: 220px;
+  width: 300px;
   height: 100%;
   background: white;
   box-shadow: ${({ isOpen }) => (isOpen ? "-2px 0 5px rgba(0, 0, 0, 0.2)" : "none")}; 
   transition: right 0.3s ease; 
   padding: 15px;
   z-index:9999;
+
+  @media(max-width:428px){
+    width:220px;
+  }
 `;
 
 const SidebarItem = styled.button`
@@ -88,7 +92,7 @@ const SidebarItem = styled.button`
 
 const Content = styled.div`
   flex: 1;
-  padding: 15px;
+  // padding: 15px;
   overflow-y: auto;
 `;
 
@@ -197,8 +201,10 @@ const DriverDashboard = () => {
           <Sidebar isOpen={menuOpen} ref={menuRef}>
             <SidebarItem onClick={() => { navigate('/driverdashboard'); setMenuOpen(false); }}>🏠 Home</SidebarItem>
             <SidebarItem onClick={() => { navigate(`/driverdashboard/driverprofile/${driverInfo.id}`); setMenuOpen(false); }}>👤 Profile</SidebarItem>
-            <SidebarItem onClick={() => { navigate('/driverdashboard/driverrides'); setMenuOpen(false); }}>🚖 My Rides</SidebarItem>
-            <SidebarItem onClick={() => { navigate('/driverdashboard/driverearnings'); setMenuOpen(false); }}>💸 My Earnings</SidebarItem>
+            <SidebarItem onClick={() => { navigate(`/driverdashboard/acceptedRide/${driverInfo.id}`); setMenuOpen(false); }}>🚖 Accepted Ride</SidebarItem>
+           
+            <SidebarItem onClick={() => { navigate(`/driverdashboard/completedRides/${driverInfo.id}`); setMenuOpen(false); }}>🚖 Completed Rides and Earnings</SidebarItem>
+            {/* <SidebarItem onClick={() => { navigate('/driverdashboard/driverearnings '); setMenuOpen(false); }}>💸 My Earnings</SidebarItem> */}
             
             <SidebarItem onClick={handleLogout}>🏃‍♂️ Logout</SidebarItem>
           </Sidebar>
@@ -221,7 +227,8 @@ const DriverDashboard = () => {
           <NavIcon active onClick={() => navigate(`/driverdashboard/driverprofile/${driverInfo.id}`)}>
             <FaUser />
           </NavIcon>
-          <NavIcon onClick={() => navigate('/driverdashboard/driverrides')}>
+          
+          <NavIcon onClick={() => navigate(`/driverdashboard/completedRides/${driverInfo.id}`)}>
             <FaTaxi />
           </NavIcon>
           <NavIcon onClick={() => setMenuOpen(!menuOpen)}>

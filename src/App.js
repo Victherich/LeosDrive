@@ -42,6 +42,13 @@ import FooterComponent from './components/Footer';
 import HeaderComponent from './components/Header';
 import ContactUs from './components/ContactcUs';
 import ScrollToTop from './components/ScrollToTop';
+import DeliveryForm from './components/DeliveryForm';
+import DriverAcceptedRides from './components/DriverAcceptedRides';
+import DriverCompletedRides from './components/DriverCompletedRides';
+import MyDeliveryBookings from './components/MyDeliveryBookings';
+import DeliveryDetails from './components/DeliveryDetail';
+import DriverCompletedRides2 from './components/DriverCompletedRides2';
+import AdminDeliveryDetail from './components/AdminDeliveryDetail';
 
 
 function App() {
@@ -66,6 +73,11 @@ function App() {
 
             <Route path='/termsandconditions' element={<TermsAndPrivacy/>}/>
             <Route path='/contactus' element = {<ContactUs/>}/>
+
+
+            <Route path='/userdashboard/deliveryform/:user_id' element={<DeliveryForm/>}/>
+            <Route path='/userdashboard/mydeliverybookings/:user_id' element={<MyDeliveryBookings/>}/>
+            <Route path='/userdashboard/mydelivery/:id' element={<DeliveryDetails/>}/>
 
 
 
@@ -115,13 +127,20 @@ function App() {
                 <Route path ='' element={<AdminDashboard/>}/>
             </Route>
 
+            <Route path='/deliverydetail/:id' element={<AdminDeliveryDetail/>}/>
+
 
             {/* user */}
             <Route path="/userdashboard/userprofile/:id" element={<UserProfile />} />
                             <Route path="/userdashboard/userrides" element={<UserRides />} />
 
                             <Route path="/driverdashboard/driverprofile/:id" element={<DriverProfile/>}/>
+            {/* <Route path='/userdashboard/foodform/:user_id' element={<} */}
 
+
+            <Route path='/driverdashboard/acceptedRide/:driverId' element={<DriverAcceptedRides/> }/>
+            <Route path='/driverdashboard/completedRides/:driverId' element={<DriverCompletedRides/>}/>
+            <Route path='/driverdashboard/completedRides2/:driverId' element={<DriverCompletedRides2/>}/>
         </Routes>
         <FooterComponent/>
     </BrowserRouter>
