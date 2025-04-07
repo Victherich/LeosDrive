@@ -92,7 +92,7 @@ if (!["/",'/aboutus',  "/termsandconditions", "/contactus"].includes(location.pa
                 <NavItem>123 Main Street, Lagos, Nigeria</NavItem>
 
                 <NavItem>support@loesdrive.com</NavItem>
-                <NavItem>+234 800 123 4567</NavItem>
+                <NavItem>+2347059687402</NavItem>
            
               </Brand>
               <FooterNav>

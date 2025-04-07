@@ -396,30 +396,151 @@ const [ongoingRideInfo, setOngoingRideInfo] = useState(null);
 const [completedRideInfo, setCompletedRideInfo] = useState(null);
 // console.log(completedRideInfo)
 const {rates}=useContext(Context);
-// console.log(bookingNumber)
 
 const navigate = useNavigate()
 
 
+// getting user location
+const getUserLocation = ()=>{
+  console.log("useEffect: trying to get location");
+
+  if ('geolocation' in navigator) {
+    // setIsLoadingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLatitude(latitude);
+        setLongitude(longitude);
+        setPickupCoords(`Lat: ${latitude}, Lng: ${longitude}`);
+        console.log("Location success:", latitude, longitude);
+        // setIsLoadingLocation(false);
+        // Swal.fire({text:"location updated", timer:1000})
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setLatitude(null);
+        setLongitude(null);
+        // setIsLoadingLocation(false);
+
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            Swal.fire({
+              icon: 'error',
+              title: 'Permission Denied',
+              text: 'Please allow location access in your browser settings and refresh the page.',
+              allowOutsideClick:false,
+              confirmButtonText:"Try Again"
+            }).then((result)=>{
+              if(result.isConfirmed){
+                getUserLocation();
+              }
+            });
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            Swal.fire({
+              icon: 'warning',
+              title: 'Location Unavailable',
+              text: 'Try turning on your GPS or moving to a better signal area, then refresh the page.',
+              allowOutsideClick:false,
+              confirmButtonText:"Try Again"
+            }).then((result)=>{
+              if(result.isConfirmed){
+                getUserLocation();
+              }
+            });
+            break;
+
+          case error.TIMEOUT:
+            Swal.fire({
+              icon: 'info',
+              title: 'Timeout',
+              text: 'Fetching your location took too long. Please refresh the page and try again.',
+              allowOutsideClick:false,
+              confirmButtonText:"Try Again"
+            }).then((result)=>{
+              if(result.isConfirmed){
+                getUserLocation();
+              }
+            });
+            break;
+
+          default:
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Something went wrong while getting your location.',
+              allowOutsideClick:false,
+              confirmButtonText:"Try Again"
+            }).then((result)=>{
+              if(result.isConfirmed){
+                getUserLocation();
+              }
+            });
+            break;
+        }
+      }
+    );
+  } else {
+    // setIsLoadingLocation(false);
+    Swal.fire({
+      icon: 'error',
+      title: 'Unsupported',
+      text: 'Geolocation is not supported in your browser.',
+      allowOutsideClick:false,
+      confirmButtonText:"Try Again"
+    }).then((result)=>{
+      if(result.isConfirmed){
+        getUserLocation();
+      }
+    });
+  }
+
+}
 
 useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-          const { latitude, longitude } = position.coords;
-          setPickupCoords(`Lat: ${latitude}, Lng: ${longitude}`);
+  getUserLocation();
+}, []);
 
-        },
-        () => {
-          setLatitude(null);
-          setLongitude(null);
-        }
-      );
-    }
-  }, []);
+
+useEffect(()=>{
+  const id = setInterval(()=>{
+    getUserLocation();
+  },3000)
+
+  return ()=>clearInterval(id)
+},[]);
+
+
+
+
+
+// fetcing user location
+// useEffect(() => {
+//     if (navigator.geolocation) {
+//       navigator.geolocation.getCurrentPosition(
+//         (position) => {
+//           setLatitude(position.coords.latitude);
+//           setLongitude(position.coords.longitude);
+//           const { latitude, longitude } = position.coords;
+//           setPickupCoords(`Lat: ${latitude}, Lng: ${longitude}`);
+
+//         },
+//         () => {
+//           setLatitude(null);
+//           setLongitude(null);
+//         }
+//       );
+//     }
+//   }, []);
   
+
+
+// fetching user location
+
+
 
 
 
@@ -905,12 +1026,13 @@ useEffect(() => {
         .filter((ride) => String(ride.user_id) === String(userInfo.id)); // Ensure correct type comparison
 
       console.log("User's ongoing rides:", ongoingRides); // ✅ Debugging: Check user's rides
-
+     
       if (ongoingRides.length > 0) {
         setOngoingRideInfo(ongoingRides[0]); // ✅ Set the first ride (modify if multiple needed)
-        setRideInfo(!null)
+        setRideInfo(prev => !prev);
         fetchOngoingRides2();
-        Swal.fire({text:"ongoing ride"})
+        Swal.fire({text:"Ongoing ride", allowOutsideClick:false}).then((result)=>{if(result.isConfirmed){setRideInfo(prev=>!prev)}})
+      
       } else {
         setOngoingRideInfo(null);
       }
@@ -984,7 +1106,7 @@ const [rideUpdate, setRideUpdate] = useState({
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
         setCurrentLocation({ latitude, longitude });
-  
+        
         if (startLocation) {
           const distance = calculateDistance(
             startLocation.latitude,
@@ -1023,7 +1145,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   
 // number 4
   useEffect(() => {
-    const intervalId = setInterval(getCurrentLocation, 10000); // Update every 10 seconds
+    const intervalId = setInterval(getCurrentLocation, 3000); // Update every 3 seconds
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [startLocation]);
   
@@ -1079,6 +1201,61 @@ const resetDisplays = ()=>{
     dispatch(updateBookingNumber(null))
     window.location.reload();
 }
+
+
+
+
+// subscribe to canceled ride
+useEffect(() => {
+  if (!userInfo || !userInfo.id) return;
+
+  const cancelledRidesRef = ref(database, `cancelledRides`);
+
+  // Listen for cancellations relevant to the current user
+  const unsubscribe = onValue(cancelledRidesRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const userCancelledRides = Object.keys(data)
+        .map((key) => ({ id: key, ...data[key] }))
+        .filter((ride) => ride.user_id === userInfo.id);
+
+      if (userCancelledRides.length > 0) {
+        console.log(userCancelledRides)
+        // Show alert or update UI
+        Swal.fire({title:"Ride Cancelled", 
+        text:"Your ride has been cancelled.",
+        icon: "info", 
+        allowOutsideClick:false,
+      }).then((result)=>{if(result.isConfirmed){deleteCancelledRide(userCancelledRides[0]?.id);}})
+        setRideInfo(null); // Clear the current ride info
+      }
+    }
+  });
+
+
+  // delete from cancelled rides
+  const deleteCancelledRide = (rideId) => {
+    const cancelledRideRef = ref(database, `cancelledRides/${rideId}`);
+  
+    remove(cancelledRideRef)
+      .then(() => {
+        // Swal.fire("Deleted", "Cancelled ride has been removed.", "success");
+         // Clear ride details
+         dispatch(updateBookingNumber(null));
+         setRideInfo(null);
+         window.location.reload();
+    
+      })
+      .catch((error) => {
+        console.error("Error deleting cancelled ride:", error);
+        Swal.fire("Error", "Failed to delete cancelled ride.", "error");
+      });
+  };
+  
+
+  return () => unsubscribe(); // Cleanup listener
+}, [userInfo]);
+
 
 
 

@@ -52,6 +52,7 @@ import AdminDeliveryDetail from './components/AdminDeliveryDetail';
 import FoodDeliveryForm from './components/FoodBookingForm';
 import UserFoodDeliveries from './components/UserFoodDeliveries';
 import AboutUs from './components/AboutUs';
+import wp from './Images/whatsapplogo.png'
 
 
 function App() {
@@ -148,9 +149,11 @@ function App() {
             <Route path='/driverdashboard/completedRides/:driverId' element={<DriverCompletedRides/>}/>
             <Route path='/driverdashboard/completedRides2/:driverId' element={<DriverCompletedRides2/>}/>
         </Routes>
+        <a><img src={wp} alt="logo" className="WhatsAppIcon" onClick={() => window.open("https://wa.me/2347059687402", "_blank")} /></a> 
+        
         <FooterComponent/>
     </BrowserRouter>
-  );
+  );    
 }
 
 export default App;

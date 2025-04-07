@@ -311,6 +311,7 @@ const handleSubmit = async (e) => {
           {/* Profile Photo */}
           <ProfilePicWrapper>
             <label>Upload Profile Photo:</label>
+            <p>(Supported file format :jpg, png)</p>
             <InputWrapper>
               <Icon><FaCamera /></Icon>
               <Input type="file" name="profilePhoto" accept="image/*" onChange={handleChange} />
@@ -349,7 +350,10 @@ const handleSubmit = async (e) => {
           </InputWrapper>
 
           {/* Document Upload */}
+          Upload Vehicle and Personal documents
+          <p>(Supported file format: pdf )</p>
           <InputWrapper>
+          
             <Icon><FaFileUpload /></Icon>
             <Input type="file" name="document" accept="application/pdf" onChange={handleChange} />
           </InputWrapper>

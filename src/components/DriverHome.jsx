@@ -109,7 +109,7 @@
 
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { database } from "./firebaseConfig"; // Import the configured database
 import { ref, onValue, update , push, set, remove, get} from "firebase/database";
 import styled from "styled-components";
@@ -120,6 +120,7 @@ import { use } from "react";
 import taxi from '../Images/taxi.png'
 import taxigif from '../Images/taxigif.gif'
 import bike from '../Images/bike.png'
+import { Context } from "./Context";
 
 // Styled Components
 
@@ -204,6 +205,26 @@ const Button = styled.button`
 `;
 
 
+const Button2 = styled.button`
+  background: orange;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+
+  &:hover {
+    background: ${(props) => (props.status === "pending" ? "#218838" : "gray")};
+  }
+`;
+
+
 const Name = styled.div`
 background:rgba(0,0,0,0.2);
 color:white;
@@ -235,11 +256,172 @@ p{
 
 const DriverHomePage = () => {
   const [rides, setRides] = useState([]);
+  
   const [driver, setDriver] = useState({});
   // console.log(driver)
   const driverInfo = useSelector(state=>state.driverInfo)
+  const driverId = driverInfo.id
   const [driverVerificationData, setDriverVerificationData]= useState({})
 console.log(driverVerificationData.car_name, driverVerificationData.car_plate)
+
+const {blockRide, setBlockRide, }=useContext(Context);
+
+
+
+// for display blocker
+
+// const fetchAcceptedRides = async () => {
+//   try {
+//     const ridesRef = ref(database, "acceptedRides");
+//     const snapshot = await get(ridesRef);
+    
+//     if (snapshot.exists()) {
+//       const ridesData = snapshot.val();
+//       const driverRides = Object.keys(ridesData)
+//         .map((key) => ({
+//           id: key,
+//           ...ridesData[key],
+//         }))
+//         .filter((ride) => ride.driver_id === driverId && ride.ride_status === "accepted");
+
+//       setRides(driverRides); // ✅ Update UI with accepted rides
+//     } else {
+//       setRides([]); // ✅ Empty UI when no accepted rides exist
+//     }
+//   } catch (error) {
+//     console.error("Error fetching accepted rides:", error);
+//   }
+// };
+
+
+
+  const fetchAcceptedRides = async () => {
+    try {
+      const ridesRef = ref(database, "acceptedRides"); // ✅ Correct reference
+      const snapshot = await get(ridesRef);
+
+      if (snapshot.exists()) {
+        const ridesData = snapshot.val();
+      //   console.log("All Rides:", ridesData); // ✅ Log fetched rides
+
+        // ✅ Convert data to an array and filter
+        const driverRides = Object.keys(ridesData)
+          .map((key) => ({
+            id: key,
+            ...ridesData[key],
+          }))
+          .filter((ride) => {
+          //   console.log(`Checking ride ${ride.id}:`, ride); // ✅ Log each ride
+            return (
+              String(ride.driver_id) === String(driverId) && ride.ride_status === "accepted"
+            );
+          });
+
+        console.log("Filtered Rides:", driverRides); // ✅ Log after filtering
+
+        // setRides(driverRides.length > 0 ? driverRides : []); // ✅ Update state
+        // fetchUserById(driverRides[0].user_id)
+        if(driverRides.length>0){
+        setBlockRide(true);
+        }
+      } else {
+        // setRides([]); // ✅ Handle empty data
+        setBlockRide(false)
+      }
+    } catch (error) {
+      console.error("Error fetching rides:", error);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  
+
+
+
+
+
+
+  
+  const fetchOngoingRides = async () => {
+      try {
+        const ridesRef = ref(database, "ongoingRides");
+        const snapshot = await get(ridesRef);
+    
+        if (snapshot.exists()) {
+          const ridesData = snapshot.val();
+    
+          console.log("Fetched ridesData:", ridesData); // ✅ Debugging
+    
+          if (!driverId) {
+            console.error("Driver ID is missing!");
+            return;
+          }
+    
+          // Ensure driverId is a string if stored that way in Firebase
+          const formattedDriverId = String(driverId);
+    
+          // ✅ Filter only the ongoing rides assigned to this driver
+          const driverOngoingRides = Object.keys(ridesData)
+            .map((key) => ({
+              id: key,
+              ...ridesData[key],
+            }))
+            .filter((ride) => {
+              console.log(`Checking ride: ${ride.id}, driver_id: ${ride.driver_id}`);
+              return String(ride.driver_id) === formattedDriverId;
+            });
+    
+          console.log("Filtered ongoing rides:", driverOngoingRides); // ✅ Debugging
+    
+          // setOngoingRidesChecker(driverOngoingRides);
+          // fetchUserById(driverOngoingRides[0].user_id)
+          if(driverOngoingRides.length>0){
+            setBlockRide(true);
+            }
+        } else {
+          console.warn("No ongoing rides found.");
+          // setOngoingRides([]);
+          setBlockRide(false)
+        }
+      } catch (error) {
+        console.error("Error fetching ongoing rides:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    
+
+
+  useEffect(() => {
+    const id = setInterval(()=>{
+      fetchOngoingRides();
+    fetchAcceptedRides();
+    },3000)
+  }, []);
+
+
+// useEffect(()=>{
+
+//   if(ongoingRides?.length>0){
+//     setBlockRide(true);
+//     }
+
+// },[]);
+
+// useEffect(()=>{
+//   if(rides.length>0){
+//   setBlockRide(true);
+//   }
+// },[]);
+// display blocker ends here
+
+
+
+
+
+
+
 
 
   useEffect(()=>{
@@ -247,8 +429,15 @@ console.log(driverVerificationData.car_name, driverVerificationData.car_plate)
     fetchDriverVerification()
   },[])
 
+// reload location eery 5 mins
+useEffect(()=>{
+  const id = setInterval(()=>{
+    // window.location.reload();
+    // Swal.fire({text:"success reload"})
+  },3000)
 
-
+  return ()=>clearInterval(id)
+},[])
 
 
   const fetchDriverById = async () => {
@@ -427,6 +616,12 @@ console.log(driverVerificationData.car_name, driverVerificationData.car_plate)
             <img src={bike} alt='im'/>
             <p> "Swift, secure, and seamless—LeosDrive delivers more than just packages; we deliver peace of mind!"</p>
           </Name>
+          {blockRide&&<Container style={{background:"rgba(255,255,255,0.7)", position:"fixed", width:"100%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center"}}>
+              <h2 style={{color:"#333", background:"white", padding:"10px", borderRadius:"10px"}}>
+                You have ongoing ride , Please complete and Refresh before accepting a new ride.
+              </h2>
+              <Button2 onClick={()=>window.location.reload()}>Refresh</Button2>
+          </Container>}
     <Container>
       <Title>🚖 Driver Dashboard</Title>
       <h3>Your Incoming Ride Requests</h3>

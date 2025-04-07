@@ -63,6 +63,8 @@ const DriverAcceptedRides = () => {
   const [user, setUser] = useState({})
   const {rates} = useContext(Context)
 
+  const {blockRide, setBlockRide}=useContext(Context);
+
 //   console.log(user)
 
 
@@ -182,7 +184,7 @@ const DriverAcceptedRides = () => {
     try {
       const ridesRef = ref(database, "acceptedRides");
       const snapshot = await get(ridesRef);
-  
+      
       if (snapshot.exists()) {
         const ridesData = snapshot.val();
         const driverRides = Object.keys(ridesData)
@@ -207,7 +209,17 @@ const DriverAcceptedRides = () => {
 
     const [ongoingRides, setOngoingRides] = useState([]);
  
-  
+  // useEffect(()=>{
+  //   if(ongoingRides?.length>0){
+  //   setBlockRide(true);
+  //   }
+  // },[]);
+
+  // useEffect(()=>{
+  //   if(rides?.length>0){
+  //   setBlockRide(true);
+  //   }
+  // },[]);
 
     
     const fetchOngoingRides = async () => {
@@ -330,7 +342,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   
 // number 4
   useEffect(() => {
-    const intervalId = setInterval(getCurrentLocation, 10000); // Update every 10 seconds
+    const intervalId = setInterval(getCurrentLocation, 3000); // Update every 3 seconds
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [startLocation]);
   
@@ -437,6 +449,59 @@ const endRide = (rideId) => {
 
 
   
+// cancel ride ######################################3
+const cancelRide = (rideId) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "This will cancel the ride permanently.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, cancel it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const acceptedRideRef = ref(database, `acceptedRides/${rideId}`);
+
+      get(acceptedRideRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const rideData = snapshot.val();
+
+            const cancelledRideRef = push(ref(database, "cancelledRides"));
+            set(cancelledRideRef, rideData)
+              .then(() => {
+                remove(acceptedRideRef)
+                  .then(() => {
+                    Swal.fire("Cancelled!", "The ride has been cancelled.", "success");
+                    fetchAcceptedRides(); // Refresh UI
+                  })
+                  .catch((error) => {
+                    console.error("Error deleting ride from acceptedRides:", error);
+                    Swal.fire("Error", "Could not remove ride from acceptedRides.", "error");
+                  });
+              })
+              .catch((error) => {
+                console.error("Error moving ride to cancelledRides:", error);
+                Swal.fire("Error", "Could not move ride to cancelledRides.", "error");
+              });
+          } else {
+            Swal.fire("Error", "Ride not found in accepted rides.", "error");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching accepted ride:", error);
+          Swal.fire("Error", "Could not fetch ride details.", "error");
+        });
+    }
+  });
+};
+
+
+
+
+
+
 
   
   return (
@@ -469,6 +534,10 @@ const endRide = (rideId) => {
             <Button onClick={()=>startRide(ride.id)}>
                 Start Ride
             </Button>   
+
+            <Button onClick={()=>cancelRide(ride.id)} style={{backgroundColor:"gray", marginLeft:"20px"}}>
+                Cancel Ride
+            </Button> 
           </RideCard>
         ))
       )}

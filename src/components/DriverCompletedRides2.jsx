@@ -1,11 +1,12 @@
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ref, get } from 'firebase/database';
 import { database } from "./firebaseConfig";
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { Context } from './Context';
 
 // Styled Components for UI Design
 const Container = styled.div`
@@ -103,8 +104,10 @@ const DriverCompletedRides2 = () => {
 //   const driverId = driverInfo.id;
 const {driverId} = useParams();
 
+const {commissionRates}=useContext(Context);
+
  // Fixed percentage for driver's commission
-const DRIVER_COMMISSION = 0.20; // 20% of total amount goes to the driver
+const DRIVER_COMMISSION = commissionRates/100;
 
 useEffect(() => {
   const fetchCompletedRides = async () => {
@@ -152,7 +155,7 @@ useEffect(() => {
       {/* Earnings Summary */}
       <SummaryBox>
   <SummaryText>Total Earnings from Rides: <AmountHighlight>NGN {totalAmount.toFixed(2)}</AmountHighlight></SummaryText>
-  <SummaryText>Driver's Commission (20% of Total): <AmountHighlight>NGN {driverEarnings.toFixed(2)}</AmountHighlight></SummaryText>
+  <SummaryText>Driver's Commission ({commissionRates}% of Total): <AmountHighlight>NGN {driverEarnings.toFixed(2)}</AmountHighlight></SummaryText>
 </SummaryBox>
 
 
