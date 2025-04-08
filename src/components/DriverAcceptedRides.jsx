@@ -6,6 +6,13 @@ import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { Context } from "./Context";
 // 🌟 Styled Components for Beautiful UI
+import { startRideA } from "../Features/Slice";
+import { stopRideA } from "../Features/Slice";
+import { updateElapsedTime } from "../Features/Slice";
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
+
+
+
 const Container = styled.div`
   max-width: 800px;
   margin: auto;
@@ -64,14 +71,40 @@ const DriverAcceptedRides = () => {
   const {rates} = useContext(Context)
 
   const {blockRide, setBlockRide}=useContext(Context);
+  const dispatch = useDispatch();
+  // const elapsedTime = useSelector(state=>state.elapsedTime)
+const isRiding = useSelector(state=>state.isRiding)
+const rideStart = useSelector(state=>state.rideStart)
+const [elapsedTime, setElapsedTime]=useState(0);
+// console.log(isRiding);
+// console.log(rideStart);
+//   console.log(elapsedTime);
 
 //   console.log(user)
 
 
+useEffect(() => {
+  const id = setInterval(() => {
+    setElapsedTime(Math.floor((Date.now() - rideStart) / 1000));
+  }, 2000);
 
+  return () => clearInterval(id); // Clean up the interval
+}, [isRiding, rideStart]);
 
 
   
+
+// just conerting time to readable format for display and saing
+const formatTime = (seconds) => {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  const pad = (num) => String(num).padStart(2, '0');
+
+  return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+};
+
 
 
 
@@ -157,6 +190,7 @@ const DriverAcceptedRides = () => {
                   fetchAcceptedRides(); // Fetch accepted rides to update UI
                   fetchOngoingRides();
                   fetchOngoingRides2();
+                  dispatch(startRideA());
 
                 })
                 .catch((error) => {
@@ -209,19 +243,28 @@ const DriverAcceptedRides = () => {
 
     const [ongoingRides, setOngoingRides] = useState([]);
  
-  // useEffect(()=>{
-  //   if(ongoingRides?.length>0){
-  //   setBlockRide(true);
-  //   }
-  // },[]);
+//  // Time-based calculation of the rides
+// const handleRideTiming = ()=>{
+//   if(ongoingRides?.length>0){
+//     const id = setInterval(()=>{
+//       dispatch(updateElapsedTime());
+//       // Swal.fire({text:"running"})
+//     },2000);
+//     return ()=>clearInterval(id);
+//   }
+// };
 
-  // useEffect(()=>{
-  //   if(rides?.length>0){
-  //   setBlockRide(true);
-  //   }
-  // },[]);
+// useEffect(()=>{
+//   const id = setInterval(()=>{
+//     handleRideTiming();
+//   },6000)
 
-    
+//  return ()=>clearInterval(id)
+  
+// },[])
+
+ 
+  
     const fetchOngoingRides = async () => {
         try {
           const ridesRef = ref(database, "ongoingRides");
@@ -255,6 +298,9 @@ const DriverAcceptedRides = () => {
       
             setOngoingRides(driverOngoingRides);
             fetchUserById(driverOngoingRides[0].user_id)
+            // handleRideTiming();
+            
+            
           } else {
             console.warn("No ongoing rides found.");
             setOngoingRides([]);
@@ -293,6 +339,11 @@ const [rideUpdate, setRideUpdate] = useState({
     distance: 0,
     amount: 0,
   });
+
+
+
+
+
   const [startLocation, setStartLocation] = useState(null); // Start location
   const [currentLocation, setCurrentLocation] = useState(null); // Current location of the driver
   const ratePerKm = rates // Example rate per km, adjust accordingly
@@ -315,7 +366,7 @@ const [rideUpdate, setRideUpdate] = useState({
             ...prevState,
             location: `${latitude}, ${longitude}`,
             distance: distance,
-            amount: distance * ratePerKm, // Calculate amount based on distance
+            amount: elapsedTime * rates, // Calculate amount based on distance
           }));
         }
       });
@@ -410,9 +461,11 @@ const endRide = (rideId) => {
             ...rideData, // Spread the existing ride data
             final_location: rideUpdate.location,  // Final location from rideUpdate
             final_distance: rideUpdate.distance,  // Total distance traveled during the ride
-            final_amount: rideUpdate.amount,      // Total fare based on distance (or other factors)
-            ride_status: "completed",             // Update status to completed
-            end_time: new Date().toISOString(),  // Timestamp of when the ride ended
+            final_amount: (elapsedTime*rates).toFixed(2),      // Total fare based on distance (or other factors)
+            ride_status: "completed",  
+            start_time: new Date(rideStart).toLocaleTimeString(),
+            ride_duration:formatTime(elapsedTime),           // Update status to completed
+            end_time: new Date().toLocaleString(),  // Timestamp of when the ride ended
           };
   
           // Move the ride to the "completedRides" table
@@ -424,7 +477,7 @@ const endRide = (rideId) => {
                 .then(() => {
                   Swal.fire("Ride Ended!", "This ride has been marked as completed. Proceed to your completed Rides", "success");
                   fetchOngoingRides(); // Fetch ongoing rides to update UI
-                 
+                 dispatch(stopRideA());
                 })
                 .catch((error) => {
                   console.error("Error deleting ride from ongoingRides:", error);
@@ -503,6 +556,8 @@ const cancelRide = (rideId) => {
 
 
 
+
+
   
   return (
     <>
@@ -516,7 +571,8 @@ const cancelRide = (rideId) => {
         rides.map((ride) => (
           <RideCard key={ride.id}>
             <RideInfo><strong>Booking Number:</strong> {ride.booking_number}</RideInfo>
-            <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo>
+            {/* <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo> */}
+            <RideInfo><strong>Pickup Location:</strong> {ride.pickup_location}</RideInfo>
             <RideInfo><strong>Drop-off:</strong> {ride.drop_off}</RideInfo>
             <RideInfo><strong>Status:</strong> {ride.ride_status}</RideInfo>
          
@@ -554,7 +610,8 @@ const cancelRide = (rideId) => {
         ongoingRides.map((ride) => (
           <RideCard key={ride.id}>
             <RideInfo><strong>Booking Number:</strong> {ride.booking_number}</RideInfo>
-            <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo>
+            {/* <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo> */}
+            <RideInfo><strong>Pickup Location:</strong> {ride.pickup_location}</RideInfo>
             <RideInfo><strong>Drop-off:</strong> {ride.drop_off}</RideInfo>
             <RideInfo><strong>Status:</strong> {ride.ride_status}</RideInfo>
        
@@ -574,9 +631,19 @@ const cancelRide = (rideId) => {
             </Button>   
                 <PassengerDetails>
                     <strong>Ride Updates</strong>
-                    <RideInfo><strong>Current Location:</strong> {rideUpdate.location}</RideInfo>
-                    <RideInfo><strong>Distance Covered:</strong> {rideUpdate.distance}</RideInfo>
-                    <RideInfo><strong>Current Amount:</strong> NGN {rideUpdate.amount}</RideInfo>
+                    {/* <RideInfo><strong>Current Location:</strong> {rideUpdate.location}</RideInfo> */}
+
+                    {/* <RideInfo><strong>Distance Covered:</strong> {rideUpdate.distance}</RideInfo> */}
+                    <RideInfo>
+  <strong>Start Time:</strong> {new Date(rideStart).toLocaleTimeString()}
+</RideInfo>
+                    <RideInfo>
+  <strong>Current Time:</strong> {new Date().toLocaleTimeString()}
+</RideInfo> 
+                    <RideInfo><strong>Elapsed Time:</strong> {formatTime(elapsedTime)}</RideInfo>
+                    <RideInfo><strong>Current Amount:</strong> NGN {(rates*elapsedTime).toFixed(2)}</RideInfo>
+
+
                     
                 </PassengerDetails>
             

@@ -58,8 +58,11 @@ const driverId =driverInfo?.id
 
 
 //fetching ride rates
+const [ratePerMinute, setRatesPerMinute]=useState(null)
+// const [rates, setRates]=useState(null)
 
-const [rates, setRates]=useState(null)
+
+const rates = ratePerMinute / 60;
 console.log(rates)
 
 useEffect(()=>{
@@ -77,7 +80,7 @@ useEffect(()=>{
     try {
       const res = await fetch('https://www.leosdrive.com/api/fetch_rates.php');
       const data = await res.json();
-      if (data.success) setRates(data.rates[0].amount);
+      if (data.success) setRatesPerMinute(data.rates[0].amount);
     } catch (err) {
     //   Swal.fire('Error', 'Failed to fetch rates', 'error');
       console.error(err)

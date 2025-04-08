@@ -210,6 +210,17 @@ const MySlice = createSlice({
     userOnboarded: false,
     driverOnboarded: false,
   bookingNumber:null,
+
+   // Ride Tracking
+   isRiding: false,
+   rideStart: null,
+   elapsedTime: 0,
+
+     // Ride Tracking passenger
+     isRidingB: false,
+     rideStartB: null,
+     elapsedTimeB: 0,
+
   },
   reducers: {
     // Admin actions
@@ -272,6 +283,49 @@ const MySlice = createSlice({
       state.bookingNumber = payload;
     },
 
+    // 🎯 Ride Actions (Persistable via Redux Persist)
+    startRideA: (state) => {
+      state.rideStart = Date.now();
+      state.isRiding = true;
+    },
+    stopRideA: (state) => {
+      state.rideStart = null;
+      state.isRiding = false;
+      state.elapsedTime = 0;
+    },
+
+    
+    updateElapsedTime: (state) => {
+      if (state.rideStart) {
+        const now = Date.now();
+        const elapsed = Math.floor((now - state.rideStart) / 1000);
+        state.elapsedTime = elapsed;
+      }
+    },
+
+
+        // 🎯 Ride Actions (Persistable via Redux Persist)
+        startRideB: (state) => {
+          if(state.rideStartB===null){
+          state.rideStartB = Date.now();
+          state.isRidingB = true;
+          }
+        },
+        stopRideB: (state) => {
+          state.rideStartB = null;
+          state.isRidingB = false;
+          state.elapsedTimeB = 0;
+        },
+    
+        
+        updateElapsedTimeB: (state) => {
+          if (state.rideStartB) {
+            const nowB = Date.now();
+            const elapsedB = Math.floor((nowB - state.rideStartB) / 1000);
+            state.elapsedTimeB = elapsedB;
+          }
+        },
+    
     
   },
 });
@@ -289,6 +343,12 @@ export const {
   updateUserOnboarded,
   updateDriverOnboarded,
   updateBookingNumber,
+  startRideA,
+  stopRideA,
+  updateElapsedTime,
+  startRideB,
+  stopRideB,
+  updateElapsedTimeB,
 } = MySlice.actions;
 
 export default MySlice.reducer;

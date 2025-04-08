@@ -205,6 +205,13 @@ const Loader = styled.p`
   color: #666;
 `;
 
+const Amount = styled.span`
+  font-size: 16px;
+  color: #28a745;
+  font-weight: bold;
+`;
+
+
 // Fetch and display user's completed rides
 const UserRides = () => {
   const [rides, setRides] = useState([]);
@@ -249,54 +256,22 @@ const UserRides = () => {
       ) : rides.length === 0 ? (
         <Loader>No completed rides found</Loader>
       ) : (
-        rides.map((ride) => (
+        rides
+        .sort((a, b) => new Date(b.end_time) - new Date(a.end_time))
+        .map((ride) => (
           <RideCard key={ride.id}>
-            <RideInfo>
-              <Icon>
-              
-              </Icon>
-              <InfoText>
-                <strong>Booking Number:</strong> {ride.booking_number}
-              </InfoText>
-            </RideInfo>
-            <RideInfo>
-              <Icon>
-                <FaMapMarkerAlt />
-              </Icon>
-              <InfoText>
-                <strong>From:</strong> {ride.pickup_lat}, {ride.pickup_lng}
-              </InfoText>
-            </RideInfo>
-
-            <RideInfo>
-              <Icon>
-                <FaCar />
-              </Icon>
-              <InfoText>
-                <strong>To:</strong> {ride.drop_off}
-              </InfoText>
-            </RideInfo>
-
-            <RideInfo>
-              <Icon>
-                <FaClock />
-              </Icon>
-              <InfoText>
-                <strong>Date:</strong> {new Date(ride.end_time).toLocaleString()}
-              </InfoText>
-            </RideInfo>
-
-            <RideInfo>
-              <Icon>
-                <FaDollarSign />
-              </Icon>
-              <InfoText>
-                <strong>Price:</strong> NGN {ride.final_amount}
-              </InfoText>
-            </RideInfo>
-
-            <Status status="Completed">Completed</Status>
-          </RideCard>
+          <RideInfo><strong>Booking Number: </strong> {ride.booking_number}</RideInfo>
+          {/* <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo> */}
+          <RideInfo><strong>Pickup Location: </strong> {ride.pickup_location}</RideInfo>
+          <RideInfo><strong>Drop-off Location: </strong> {ride.drop_off}</RideInfo>
+          {/* <RideInfo><strong>Distance Covered:</strong> {ride.final_distance} km</RideInfo> */}
+          <RideInfo><strong>Start Time: </strong> {ride.start_time}</RideInfo>
+          <RideInfo><strong>Duration: </strong> {ride.ride_duration}</RideInfo>
+          <RideInfo><strong>End Time: </strong> {ride.end_time}</RideInfo>
+        <RideInfo><strong>Amount: </strong> <Amount>NGN {parseFloat(ride.final_amount).toFixed(2)}</Amount></RideInfo>
+        <RideInfo><strong>Status: </strong> <Status status={ride.ride_status}>{ride.ride_status}</Status></RideInfo>
+         
+      </RideCard>
         ))
       )}
     </Container>

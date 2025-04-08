@@ -223,6 +223,9 @@ import { ref, set, push, onValue, get, child, remove  } from "firebase/database"
 import taxigif from '../Images/taxigif.gif';
 import foodbike from '../Images/foodbike.png';
 import { Context } from "./Context";
+import { startRideB } from "../Features/Slice";
+import { stopRideB } from "../Features/Slice";
+import { updateElapsedTimeB } from "../Features/Slice";
 
 
 
@@ -378,6 +381,23 @@ const messages = [
     "Connecting you to a driver... 📞"
   ];
 
+
+  const Amount = styled.span`
+  font-size: 16px;
+  color: #28a745;
+  font-weight: bold;
+`;
+
+const Status = styled.span`
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 20px;
+  color: white;
+  background: ${({ status }) =>
+    status === "Completed" ? "green" : status === "Upcoming" ? "#fe7c04" : "gray"};
+`;
+
 const BookARide = () => {
   const [pickupCoords, setPickupCoords] = useState("Fetching location...");
   const [destination, setDestination] = useState("");
@@ -391,13 +411,46 @@ const [longitude, setLongitude] = useState(null);
 const userInfo = useSelector(state=>state.userInfo);
 const dispatch = useDispatch();
 const bookingNumber = useSelector(state=>state.bookingNumber)
+console.log(bookingNumber);
 const [rideInfo, setRideInfo] = useState(null);
 const [ongoingRideInfo, setOngoingRideInfo] = useState(null);
 const [completedRideInfo, setCompletedRideInfo] = useState(null);
+const [pickUpLocation, setPickupLocation]=useState('')
 // console.log(completedRideInfo)
 const {rates}=useContext(Context);
 
-const navigate = useNavigate()
+const navigate = useNavigate();
+
+const isRidingB = useSelector(state=>state.isRidingB)
+const rideStartB = useSelector(state=>state.rideStartB)
+const [elapsedTimeB, setElapsedTimeB]=useState(0);
+
+
+
+// geting cuurent time - the start time
+useEffect(() => {
+  const id = setInterval(() => {
+    setElapsedTimeB(Math.floor((Date.now() - rideStartB) / 1000));
+  }, 2000);
+
+  return () => clearInterval(id); // Clean up the interval
+}, [isRidingB, rideStartB]);
+
+
+
+
+// just conerting time to readable format for display and saing
+const formatTime = (seconds) => {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  const pad = (num) => String(num).padStart(2, '0');
+
+  return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+};
+
+
 
 
 // getting user location
@@ -620,6 +673,7 @@ useEffect(()=>{
           ride_status: "pending",
           booking_number: bookingNumber,
           timestamp: new Date().toISOString(),
+          pickup_location:pickUpLocation,
         };
     
             try {
@@ -633,13 +687,14 @@ useEffect(()=>{
           setDestination(""); // Reset destination input
           setSlideSwitch(2);
           dispatch(updateBookingNumber(bookingNumber));
+          // Swal.fire({text:"booked"})
     
         } catch (error) {
           console.error("Booking error:", error);
           Swal.fire("Error", "Failed to save ride in database", "error");
         }finally{
             loadingAlert.close();
-        }
+        } 
     };
     
       
@@ -664,7 +719,7 @@ const handleDeleteRide = async (bookingNumber) => {
 
     if (result.success) {
       Swal.fire("Success", result.message, "success");
-      dispatch(updateBookingNumber(null))
+      dispatch(updateBookingNumber(null));
     } else {
       Swal.fire("Error", result.error, "error");
     }
@@ -1032,7 +1087,9 @@ useEffect(() => {
         setRideInfo(prev => !prev);
         fetchOngoingRides2();
         Swal.fire({text:"Ongoing ride", allowOutsideClick:false}).then((result)=>{if(result.isConfirmed){setRideInfo(prev=>!prev)}})
-      
+        dispatch(startRideB());
+        dispatch(updateBookingNumber(ongoingRides[0].booking_number));
+
       } else {
         setOngoingRideInfo(null);
       }
@@ -1075,6 +1132,7 @@ useEffect(() => {
           setCompletedRideInfo(completedRide); 
           console.log(completedRide)// ✅ Set the specific completed ride
           setRideInfo(!null);
+          dispatch(stopRideB());
         } else {
           setCompletedRideInfo(null); // No matching ride found
         }
@@ -1198,7 +1256,7 @@ const fetchOngoingRides2 = async () => {
 
 
 const resetDisplays = ()=>{
-    dispatch(updateBookingNumber(null))
+    dispatch(updateBookingNumber(null));
     window.location.reload();
 }
 
@@ -1334,9 +1392,20 @@ return (
 
                 <PassengerDetails>
                     <strong>Ride Updates</strong>
-                    <RideInfo><strong>Current Location:</strong> {rideUpdate.location}</RideInfo>
-                    <RideInfo><strong>Distance Covered:</strong> {rideUpdate.distance}</RideInfo>
-                    <RideInfo><strong>Current Amount:</strong> NGN {rideUpdate.amount}</RideInfo>
+                    {/* <RideInfo><strong>Current Location:</strong> {rideUpdate.location}</RideInfo> */}
+                    {/* <RideInfo><strong>Distance Covered:</strong> {rideUpdate.distance}</RideInfo> */}
+                    <RideInfo>
+  <strong>Start Time:</strong> {new Date(rideStartB).toLocaleTimeString()}
+</RideInfo>
+                  
+                    <RideInfo>
+  <strong>Current Time:</strong> {new Date().toLocaleTimeString()}
+</RideInfo> 
+
+<RideInfo>
+  <strong>Elapsed Time:</strong> {formatTime(elapsedTimeB)}
+</RideInfo>  
+                    <RideInfo><strong>Current Amount:</strong> NGN {(rates*elapsedTimeB).toFixed(2)}</RideInfo>
                     
                 </PassengerDetails>
 
@@ -1368,10 +1437,17 @@ return (
 
                 <PassengerDetails>
                     <strong>Ride Updates</strong>
-                    <RideInfo><strong>Current Location:</strong> {completedRideInfo?.final_location}</RideInfo>
-                    <RideInfo><strong>Distance Covered:</strong> {completedRideInfo?.final_distance}</RideInfo>
-                    <RideInfo><strong>Current Amount:</strong> NGN {completedRideInfo?.final_amount}</RideInfo>
-                    
+                   <RideInfo><strong>Booking Number: </strong> {completedRideInfo.booking_number}</RideInfo>
+          {/* <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo> */}
+          <RideInfo><strong>Pickup Location: </strong> {completedRideInfo.pickup_location}</RideInfo>
+          <RideInfo><strong>Drop-off Location: </strong> {completedRideInfo.drop_off}</RideInfo>
+          {/* <RideInfo><strong>Distance Covered:</strong> {ride.final_distance} km</RideInfo> */}
+          <RideInfo><strong>Start Time: </strong> {completedRideInfo.start_time}</RideInfo>
+          <RideInfo><strong>Duration: </strong> {completedRideInfo.ride_duration}</RideInfo>
+          <RideInfo><strong>End Time: </strong> {completedRideInfo.end_time}</RideInfo>
+        <RideInfo><strong>Amount: </strong> <Amount>NGN {parseFloat(completedRideInfo.final_amount).toFixed(2)}</Amount></RideInfo>
+        {/* <RideInfo><strong>Status: </strong> <Status status={completedRideInfo.ride_status}>{completedRideInfo.ride_status}</Status></RideInfo> */}
+         
                 </PassengerDetails>
 
                 <button className="cancel-button" onClick={resetDisplays}>
@@ -1386,15 +1462,22 @@ return (
       ) : (
         <Form>
           <Title>Book a Ride</Title>
-          <p><FaMapMarkerAlt /> Your Destination</p>
-          <Input
+          <p><FaMapMarkerAlt /> From: </p>
+          {/* <Input type="text" value={pickupCoords} disabled /> */}
+          <Input 
+             type="text"
+             placeholder="Enter Pick up Location"
+             value={pickUpLocation}
+             onChange={(e) => setPickupLocation(e.target.value.toUpperCase())}
+          />
+          <p><FaLocationArrow /> To: </p>
+          <Input  
             type="text"
             placeholder="Enter Destination"
             value={destination}
             onChange={(e) => setDestination(e.target.value.toUpperCase())}
           />
-          <p><FaLocationArrow /> Your Location</p>
-          <Input type="text" value={pickupCoords} disabled />
+          
           <Button onClick={handleBookRide}>
             <img src={taxi} alt="taxi" />
             <p>Let's Go</p>

@@ -128,11 +128,12 @@ useEffect(() => {
 
         // Calculate Total Amount
         const total = driverCompletedRides.reduce((sum, ride) => sum + (ride.final_amount || 0), 0);
-        setTotalAmount(total);
-
+        setTotalAmount(total)
+          
+        
+    
         // Calculate Driver's Earnings (20% of total)
-        const earnings = total * DRIVER_COMMISSION;
-        setDriverEarnings(earnings);
+       
       } else {
         setCompletedRides([]);
         setTotalAmount(0);
@@ -148,14 +149,19 @@ useEffect(() => {
   fetchCompletedRides();
 }, [driverId]);
 
+// calculating drier earning
+useEffect(()=>{
+  setDriverEarnings(parseFloat(totalAmount) * DRIVER_COMMISSION);    
+},[totalAmount])
+
   return (
     <Container>
       <Title>Completed Rides</Title>
 
       {/* Earnings Summary */}
       <SummaryBox>
-  <SummaryText>Total Earnings from Rides: <AmountHighlight>NGN {totalAmount.toFixed(2)}</AmountHighlight></SummaryText>
-  <SummaryText>Driver's Commission ({commissionRates}% of Total): <AmountHighlight>NGN {driverEarnings.toFixed(2)}</AmountHighlight></SummaryText>
+  <SummaryText>Total Earnings from Rides: <AmountHighlight>NGN {parseFloat(totalAmount).toFixed(2)}</AmountHighlight></SummaryText>
+  <SummaryText>Driver's Commission ({commissionRates}% of Total): <AmountHighlight>NGN {(driverEarnings).toFixed(2)}</AmountHighlight></SummaryText>
 </SummaryBox>
 
 
@@ -166,15 +172,21 @@ useEffect(() => {
           {completedRides.length === 0 ? (
             <RideInfo>No completed rides found</RideInfo>
           ) : (
-            completedRides.map((ride) => (
+            completedRides
+            .sort((a, b) => new Date(b.end_time) - new Date(a.end_time))
+            .map((ride) => (
               <RideCard key={ride.id}>
-                <RideInfo><strong>Booking Number:</strong> {ride.booking_number}</RideInfo>
-                <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo>
-                <RideInfo><strong>Drop-off Location:</strong> {ride.drop_off}</RideInfo>
-                <RideInfo><strong>Status:</strong> <Status status={ride.ride_status}>{ride.ride_status}</Status></RideInfo>
-                <RideInfo><strong>Distance Covered:</strong> {ride.final_distance} km</RideInfo>
-                <RideInfo><strong>Amount:</strong> <Amount>NGN {ride.final_amount}</Amount></RideInfo>
-                <RideInfo><strong>End Time:</strong> {new Date(ride.end_time).toLocaleString()}</RideInfo>
+                  <RideInfo><strong>Booking Number:</strong> {ride.booking_number}</RideInfo>
+                  {/* <RideInfo><strong>Pickup Location:</strong> {ride.pickup_lat}, {ride.pickup_lng}</RideInfo> */}
+                  <RideInfo><strong>Pickup Location:</strong> {ride.pickup_location}</RideInfo>
+                  <RideInfo><strong>Drop-off Location:</strong> {ride.drop_off}</RideInfo>
+                  <RideInfo><strong>Status:</strong> <Status status={ride.ride_status}>{ride.ride_status}</Status></RideInfo>
+                  {/* <RideInfo><strong>Distance Covered:</strong> {ride.final_distance} km</RideInfo> */}
+                  <RideInfo><strong>Start Time:</strong> {ride.start_time}</RideInfo>
+                  <RideInfo><strong>Duration:</strong> {ride.ride_duration}</RideInfo>
+                  <RideInfo><strong>End Time:</strong> {ride.end_time}</RideInfo>
+                <RideInfo><strong>Amount:</strong> <Amount>NGN {parseFloat(ride.final_amount).toFixed(2)}</Amount></RideInfo>
+               
               </RideCard>
             ))
           )}

@@ -632,8 +632,11 @@ useEffect(()=>{
           rides.map((ride) => (
             <RideCard key={ride.id} status={ride.ride_status}>
               <h3>Booking No: {ride.booking_number}</h3>
-              <p>
+              {/* <p>
                 <FaMapMarkerAlt /> Pickup: {ride.pickup_lat}, {ride.pickup_lng}
+              </p> */}
+              <p>
+                <FaMapMarkerAlt /> Pickup: {ride.pickup_location}
               </p>
               <p>
                 <FaMapMarkerAlt /> Drop-off: {ride.drop_off}
