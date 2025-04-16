@@ -452,119 +452,119 @@ const formatTime = (seconds) => {
 
 
 
+// this is the main get user loation but will be muted
+// // getting user location
+// const getUserLocation = ()=>{
+//   console.log("useEffect: trying to get location");
 
-// getting user location
-const getUserLocation = ()=>{
-  console.log("useEffect: trying to get location");
+//   if ('geolocation' in navigator) {
+//     // setIsLoadingLocation(true);
 
-  if ('geolocation' in navigator) {
-    // setIsLoadingLocation(true);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setLatitude(latitude);
-        setLongitude(longitude);
-        setPickupCoords(`Lat: ${latitude}, Lng: ${longitude}`);
-        console.log("Location success:", latitude, longitude);
-        // setIsLoadingLocation(false);
-        // Swal.fire({text:"location updated", timer:1000})
-      },
-      (error) => {
-        console.error("Geolocation error:", error);
-        setLatitude(null);
-        setLongitude(null);
-        // setIsLoadingLocation(false);
-
-
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            Swal.fire({
-              icon: 'error',
-              title: 'Permission Denied',
-              text: 'Please allow location access in your browser settings and refresh the page.',
-              allowOutsideClick:false,
-              confirmButtonText:"Try Again"
-            }).then((result)=>{
-              if(result.isConfirmed){
-                getUserLocation();
-              }
-            });
-            break;
-
-          case error.POSITION_UNAVAILABLE:
-            Swal.fire({
-              icon: 'warning',
-              title: 'Location Unavailable',
-              text: 'Try turning on your GPS or moving to a better signal area, then refresh the page.',
-              allowOutsideClick:false,
-              confirmButtonText:"Try Again"
-            }).then((result)=>{
-              if(result.isConfirmed){
-                getUserLocation();
-              }
-            });
-            break;
-
-          case error.TIMEOUT:
-            Swal.fire({
-              icon: 'info',
-              title: 'Timeout',
-              text: 'Fetching your location took too long. Please refresh the page and try again.',
-              allowOutsideClick:false,
-              confirmButtonText:"Try Again"
-            }).then((result)=>{
-              if(result.isConfirmed){
-                getUserLocation();
-              }
-            });
-            break;
-
-          default:
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Something went wrong while getting your location.',
-              allowOutsideClick:false,
-              confirmButtonText:"Try Again"
-            }).then((result)=>{
-              if(result.isConfirmed){
-                getUserLocation();
-              }
-            });
-            break;
-        }
-      }
-    );
-  } else {
-    // setIsLoadingLocation(false);
-    Swal.fire({
-      icon: 'error',
-      title: 'Unsupported',
-      text: 'Geolocation is not supported in your browser.',
-      allowOutsideClick:false,
-      confirmButtonText:"Try Again"
-    }).then((result)=>{
-      if(result.isConfirmed){
-        getUserLocation();
-      }
-    });
-  }
-
-}
-
-useEffect(() => {
-  getUserLocation();
-}, []);
+//     navigator.geolocation.getCurrentPosition(
+//       (position) => {
+//         const { latitude, longitude } = position.coords;
+//         setLatitude(latitude);
+//         setLongitude(longitude);
+//         setPickupCoords(`Lat: ${latitude}, Lng: ${longitude}`);
+//         console.log("Location success:", latitude, longitude);
+//         // setIsLoadingLocation(false);
+//         // Swal.fire({text:"location updated", timer:1000})
+//       },
+//       (error) => {
+//         console.error("Geolocation error:", error);
+//         setLatitude(null);
+//         setLongitude(null);
+//         // setIsLoadingLocation(false);
 
 
-useEffect(()=>{
-  const id = setInterval(()=>{
-    getUserLocation();
-  },3000)
+//         switch (error.code) {
+//           case error.PERMISSION_DENIED:
+//             Swal.fire({
+//               icon: 'error',
+//               title: 'Permission Denied',
+//               text: 'Please allow location access in your browser settings and refresh the page.',
+//               allowOutsideClick:false,
+//               confirmButtonText:"Try Again"
+//             }).then((result)=>{
+//               if(result.isConfirmed){
+//                 getUserLocation();
+//               }
+//             });
+//             break;
 
-  return ()=>clearInterval(id)
-},[]);
+//           case error.POSITION_UNAVAILABLE:
+//             Swal.fire({
+//               icon: 'warning',
+//               title: 'Location Unavailable',
+//               text: 'Try turning on your GPS or moving to a better signal area, then refresh the page.',
+//               allowOutsideClick:false,
+//               confirmButtonText:"Try Again"
+//             }).then((result)=>{
+//               if(result.isConfirmed){
+//                 getUserLocation();
+//               }
+//             });
+//             break;
+
+//           case error.TIMEOUT:
+//             Swal.fire({
+//               icon: 'info',
+//               title: 'Timeout',
+//               text: 'Fetching your location took too long. Please refresh the page and try again.',
+//               allowOutsideClick:false,
+//               confirmButtonText:"Try Again"
+//             }).then((result)=>{
+//               if(result.isConfirmed){
+//                 getUserLocation();
+//               }
+//             });
+//             break;
+
+//           default:
+//             Swal.fire({
+//               icon: 'error',
+//               title: 'Error',
+//               text: 'Something went wrong while getting your location.',
+//               allowOutsideClick:false,
+//               confirmButtonText:"Try Again"
+//             }).then((result)=>{
+//               if(result.isConfirmed){
+//                 getUserLocation();
+//               }
+//             });
+//             break;
+//         }
+//       }
+//     );
+//   } else {
+//     // setIsLoadingLocation(false);
+//     Swal.fire({
+//       icon: 'error',
+//       title: 'Unsupported',
+//       text: 'Geolocation is not supported in your browser.',
+//       allowOutsideClick:false,
+//       confirmButtonText:"Try Again"
+//     }).then((result)=>{
+//       if(result.isConfirmed){
+//         getUserLocation();
+//       }
+//     });
+//   }
+
+// }
+
+// useEffect(() => {
+//   getUserLocation();
+// }, []);
+
+
+// useEffect(()=>{
+//   const id = setInterval(()=>{
+//     getUserLocation();
+//   },3000)
+
+//   return ()=>clearInterval(id)
+// },[]);
 
 
 
@@ -652,11 +652,16 @@ useEffect(()=>{
           Swal.fire({ text: "Please enter your destination!", icon: "warning", timer: 2000 });
           return;
         }
-    
-        if (latitude === null || longitude === null) {
-          Swal.fire({ text: "Fetching your location. Please wait!", icon: "info", timer: 2000 });
+
+        if (!pickUpLocation) {
+          Swal.fire({ text: "Please enter your pikup address!", icon: "warning", timer: 2000 });
           return;
         }
+    
+        // if (latitude === null || longitude === null) {
+        //   Swal.fire({ text: "Fetching your location. Please wait!", icon: "info", timer: 2000 });
+        //   return;
+        // }
     
 
         const loadingAlert = Swal.fire({text:"Please..."})
@@ -667,8 +672,8 @@ useEffect(()=>{
         // Create ride details
         const rideDetails = {
           user_id: userInfo.id, // Replace with actual user ID
-          pickup_lat: latitude,
-          pickup_lng: longitude,
+          pickup_lat: 0,
+          pickup_lng: 0,
           drop_off: destination,
           ride_status: "pending",
           booking_number: bookingNumber,
@@ -688,6 +693,9 @@ useEffect(()=>{
           setSlideSwitch(2);
           dispatch(updateBookingNumber(bookingNumber));
           // Swal.fire({text:"booked"})
+            handleSendBookingEmail();
+
+          
     
         } catch (error) {
           console.error("Booking error:", error);
@@ -698,7 +706,51 @@ useEffect(()=>{
     };
     
       
+  
 
+    const handleSendBookingEmail = async () => {
+      Swal.fire({
+        // title: 'Sending emails...',
+        text: 'Please wait while we notify approved drivers.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+    
+      try {
+        const response = await fetch('https://leosdrive.com/api/notify_approved_drivers.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+          Swal.fire({
+            icon: 'success',
+            // title: 'Emails Sent!',
+            // text: data.message || 'All approved drivers have been notified.',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            // title: 'Failed to Send Emails',
+            // text: data.message || 'Something went wrong while sending notifications.',
+          });
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+          icon: 'error',
+          // title: 'Error Occurred',
+          // text: 'Could not connect to the server or something went wrong.',
+        });
+      }
+    };
+    
 
     
 
@@ -1154,6 +1206,8 @@ const [rideUpdate, setRideUpdate] = useState({
     distance: 0,
     amount: 0,
   });
+
+
   const [startLocation, setStartLocation] = useState(null); // Start location
   const [currentLocation, setCurrentLocation] = useState(null); // Current location of the driver
   const ratePerKm = rates; // Example rate per km, adjust accordingly
